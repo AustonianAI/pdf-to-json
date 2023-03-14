@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
-import multer, { Multer, RequestHandler } from "multer";
+import multer, { Multer } from "multer";
 import type { Field } from "multer";
 import pdfParse from "pdf-parse";
 
 const upload: Multer = multer({ storage: multer.memoryStorage() });
-const uploadMiddleware: RequestHandler = upload.single("pdf");
+const uploadMiddleware = upload.single("pdf");
 
 type ExtendedNextApiRequest = NextApiRequest & {
   file: Express.Multer.File;
@@ -26,7 +26,7 @@ handler.post(async (req, res) => {
 
     // Extract text content from the PDF
     const dataBuffer: Buffer = req.file.buffer;
-    const pdfData: pdfParse.PDFData = await pdfParse(dataBuffer);
+    const pdfData = await pdfParse(dataBuffer);
     const extractedText: string = pdfData.text;
 
     console.log("Extracted text:", extractedText);
