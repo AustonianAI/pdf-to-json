@@ -6,8 +6,8 @@ export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    setFile(selectedFile || null);
+    if (event.target.files && event.target.files.length > 0)
+      setFile(event.target.files[0]);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -37,23 +37,41 @@ export default function FileUploadForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="mb-4">
-        <label
-          htmlFor="file-upload"
-          className="block mb-2 font-bold text-gray-700"
-        >
-          Select a file to upload:
-        </label>
+      <div className="relative w-full h-48 mb-4">
         <input
           type="file"
-          id="file-upload"
-          className="px-3 py-2 border rounded"
+          id="fileUpload"
+          className="absolute top-0 left-0 invisible w-full h-full"
           onChange={handleFileChange}
+          accept="application/pdf"
         />
+        <label
+          htmlFor="fileUpload"
+          className="flex items-center justify-center h-full p-4 mb-2 font-semibold text-gray-700 bg-gray-100 border-2 border-gray-300 border-dashed cursor-pointer rounded-xl"
+        >
+          {file && file.name ? (
+            <div>
+              {file.name}
+              <br />
+              <span className="text-blue-500 hover:text-blue-700">
+                Change PDF
+              </span>
+            </div>
+          ) : (
+            <div>
+              Drag and drop a PDF here, or
+              <br />
+              <span className="text-blue-500 hover:text-blue-700">
+                browse your device
+              </span>
+              .
+            </div>
+          )}
+        </label>
       </div>
       <button
         type="submit"
-        className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+        className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"
       >
         Submit
       </button>
