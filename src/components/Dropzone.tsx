@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+'use client';
+
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 interface DropZoneProps {
   onDragStateChange?: (isDragActive: boolean) => void;
@@ -10,7 +12,7 @@ interface DropZoneProps {
   className?: string;
 }
 
-export default function DropZone({
+export default function Dropzone({
   onDragStateChange,
   onFilesDrop,
   onDrag,
