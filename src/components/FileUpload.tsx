@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-const FileUploadForm: React.FC = () => {
+export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,10 +16,10 @@ const FileUploadForm: React.FC = () => {
 
     try {
       const formData = new FormData();
-      formData.append("pdf", file);
+      formData.append('pdf', file);
 
-      const response = await fetch("/api/upload-pdf", {
-        method: "POST",
+      const response = await fetch('/api/upload-pdf', {
+        method: 'POST',
         body: formData,
       });
 
@@ -28,10 +28,10 @@ const FileUploadForm: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log("File uploaded:", data.fileName);
-      console.log("Extracted text:", data.text);
+      console.log('File uploaded:', data.fileName);
+      console.log('Extracted text:', data.text);
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error('Error uploading file:', error);
     }
   };
 
@@ -40,25 +40,23 @@ const FileUploadForm: React.FC = () => {
       <div className="mb-4">
         <label
           htmlFor="file-upload"
-          className="block text-gray-700 font-bold mb-2"
+          className="block mb-2 font-bold text-gray-700"
         >
           Select a file to upload:
         </label>
         <input
           type="file"
           id="file-upload"
-          className="border rounded py-2 px-3"
+          className="px-3 py-2 border rounded"
           onChange={handleFileChange}
         />
       </div>
       <button
         type="submit"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
       >
         Submit
       </button>
     </form>
   );
-};
-
-export default FileUploadForm;
+}
