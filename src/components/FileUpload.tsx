@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, useCallback } from 'react';
 import DropZone from './Dropzone';
+import clsx from 'clsx';
 
 export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
-  const [isDropActive, setIsDropActive] = React.useState(false);
+  const [isDropActive, setIsDropActive] = useState(false);
 
-  const onDragStateChange = React.useCallback((dragActive: boolean) => {
+  const onDragStateChange = useCallback((dragActive: boolean) => {
     setIsDropActive(dragActive);
   }, []);
 
-  const onFilesDrop = React.useCallback((files: File[]) => {
+  const onFilesDrop = useCallback((files: File[]) => {
     if (files && files.length > 0) setFile(files[0]);
   }, []);
 
@@ -50,7 +51,13 @@ export default function FileUploadForm() {
       <DropZone
         onDragStateChange={onDragStateChange}
         onFilesDrop={onFilesDrop}
-        className={'relative w-full h-48 mb-4'}
+        className={clsx(
+          'relative w-full h-48 mb-4',
+          'border-2 border-dashed rounded-xl',
+          isDropActive
+            ? 'bg-blue-200 border-blue-500'
+            : 'bg-gray-100 border-gray-300',
+        )}
       >
         <input
           type="file"
@@ -61,7 +68,7 @@ export default function FileUploadForm() {
         />
         <label
           htmlFor="fileUpload"
-          className="flex items-center justify-center h-full p-4 mb-2 font-semibold text-gray-700 bg-gray-100 border-2 border-gray-300 border-dashed cursor-pointer rounded-xl"
+          className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-gray-700 cursor-pointer"
         >
           {file && file.name ? (
             <div>
