@@ -1,9 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import DropZone from './Dropzone';
 
 export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
+  const [isDropActive, setIsDropActive] = React.useState(false);
+
+  const onDragStateChange = React.useCallback((dragActive: boolean) => {
+    setIsDropActive(dragActive);
+  }, []);
+
+  const onFilesDrop = React.useCallback((files: File[]) => {
+    if (files && files.length > 0) setFile(files[0]);
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0)
@@ -37,7 +47,11 @@ export default function FileUploadForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="relative w-full h-48 mb-4">
+      <DropZone
+        onDragStateChange={onDragStateChange}
+        onFilesDrop={onFilesDrop}
+        className={'relative w-full h-48 mb-4'}
+      >
         <input
           type="file"
           id="fileUpload"
@@ -68,7 +82,7 @@ export default function FileUploadForm() {
             </div>
           )}
         </label>
-      </div>
+      </DropZone>
       <button
         type="submit"
         className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"
