@@ -1,13 +1,24 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import { useState, useCallback } from 'react';
+import DropZone from './Dropzone';
+import clsx from 'clsx';
 
-const FileUploadForm: React.FC = () => {
+export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
+  const [isDropActive, setIsDropActive] = useState(false);
+
+  const onDragStateChange = useCallback((dragActive: boolean) => {
+    setIsDropActive(dragActive);
+  }, []);
+
+  const onFilesDrop = useCallback((files: File[]) => {
+    if (files && files.length > 0) setFile(files[0]);
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    setFile(selectedFile || null);
+    if (event.target.files && event.target.files.length > 0)
+      setFile(event.target.files[0]);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -16,10 +27,10 @@ const FileUploadForm: React.FC = () => {
 
     try {
       const formData = new FormData();
-      formData.append("pdf", file);
+      formData.append('pdf', file);
 
-      const response = await fetch("/api/upload-pdf", {
-        method: "POST",
+      const response = await fetch('/api/upload-pdf', {
+        method: 'POST',
         body: formData,
       });
 
@@ -28,37 +39,63 @@ const FileUploadForm: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log("File uploaded:", data.fileName);
-      console.log("Extracted text:", data.text);
+      console.log('File uploaded:', data.fileName);
+      console.log('Extracted text:', data.text);
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error('Error uploading file:', error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="mb-4">
-        <label
-          htmlFor="file-upload"
-          className="block text-gray-700 font-bold mb-2"
-        >
-          Select a file to upload:
-        </label>
+      <DropZone
+        onDragStateChange={onDragStateChange}
+        onFilesDrop={onFilesDrop}
+        className={clsx(
+          'relative w-full h-48 mb-4',
+          'border-2 border-dashed rounded-xl',
+          isDropActive
+            ? 'bg-blue-200 border-blue-500'
+            : 'bg-gray-100 border-gray-300',
+        )}
+      >
         <input
           type="file"
-          id="file-upload"
-          className="border rounded py-2 px-3"
+          id="fileUpload"
+          className="absolute top-0 left-0 invisible w-full h-full"
           onChange={handleFileChange}
+          accept="application/pdf"
         />
-      </div>
+        <label
+          htmlFor="fileUpload"
+          className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-gray-700 cursor-pointer"
+        >
+          {file && file.name ? (
+            <div>
+              {file.name}
+              <br />
+              <span className="text-blue-500 hover:text-blue-700">
+                Change PDF
+              </span>
+            </div>
+          ) : (
+            <div>
+              Drag and drop a PDF here, or
+              <br />
+              <span className="text-blue-500 hover:text-blue-700">
+                browse your device
+              </span>
+              .
+            </div>
+          )}
+        </label>
+      </DropZone>
       <button
         type="submit"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"
       >
         Submit
       </button>
     </form>
   );
-};
-
-export default FileUploadForm;
+}

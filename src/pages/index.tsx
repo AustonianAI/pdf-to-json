@@ -1,8 +1,8 @@
-import Head from "next/head";
-import { Inter } from "next/font/google";
-import FileUploadForm from "@/components/FileUpload";
+import Head from 'next/head';
+import { Inter } from 'next/font/google';
+import FileUploadForm from '@/components/FileUpload';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
   return (
@@ -14,17 +14,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Upload a PDF
-              </h3>
-            </div>
-            <div className="px-4 py-5 sm:p-6">
-              <FileUploadForm />
-            </div>
-          </div>
+        <div className="max-w-lg p-6 mx-4 my-10 text-center bg-white rounded-lg shadow-2xl sm:p-8 sm:mx-auto">
+          <h3 className="mb-4 text-lg font-bold leading-6">Upload a PDF</h3>
+          <FileUploadForm />
         </div>
       </main>
     </>
