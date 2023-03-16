@@ -4,6 +4,7 @@ import { sample_schema } from './data_schema';
 import { generateSchemaSummary } from './schema';
 import { extractText } from './pdf';
 import { Schema } from '@Types/schemaTypes';
+import { document_metadata_schema } from '@Types/metaDataTypes';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -14,7 +15,9 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
-  console.log(countTokens(documentText));
+  const metadata = await getDocumentMetaData(documentText);
+
+  console.log(metadata);
 
   const prompt = buildPrompt(documentText);
 
@@ -57,6 +60,37 @@ const buildPrompt = (documentText: string, schema?: Schema) => {
     '\n\nIf any piece of data is unclear, leave the field null.  Respond with only JSON.\n\n###';
 
   return prompt;
+};
+
+const getDocumentMetaData = async (documentText: string) => {
+  let prompt = 'I have the following text from a document:\n\n';
+  prompt += documentText;
+  prompt += '\n\nI need a JSON object that follows the schema below:\n\n';
+
+  prompt += generateSchemaSummary(document_metadata_schema);
+
+  prompt +=
+    '\n\nIf any piece of data is unclear, leave the field null.  Respond with only JSON.\n\n###';
+
+  console.log(prompt);
+
+  const response = await openai.createChatCompletion({
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+  });
+
+  const message = response.data.choices[0]?.message?.content;
+
+  if (!message) {
+    throw new Error('No message returned from OpenAI');
+  } else {
+    return JSON.parse(message);
+  }
 };
 
 const countTokens = (text: string): number => {
