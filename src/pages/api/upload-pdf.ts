@@ -3,7 +3,7 @@ import nextConnect from 'next-connect';
 import multer, { Multer } from 'multer';
 
 import { extractText } from '@/utils/pdf';
-import { aiHandler } from '@/utils/ai';
+import { aiPdfHandler } from '@/utils/ai';
 
 const upload: Multer = multer({ storage: multer.memoryStorage() });
 const uploadMiddleware = upload.single('pdf');
@@ -22,17 +22,12 @@ handler.post(async (req, res) => {
       throw new Error('No file received');
     }
 
-    // Get the buffer from the file
-    const dataBuffer: Buffer = req.file.buffer;
+    // Get the Blob from the file
+    const blob = new Blob([req.file.buffer], { type: 'application/pdf' });
 
-    // Extract the text
-    const extractedText = await extractText(dataBuffer);
+    const aiResponse = await aiPdfHandler(blob);
 
-    const aiResponse = await aiHandler(extractedText);
-
-    res
-      .status(200)
-      .json({ fileName: req.file.originalname, text: extractedText });
+    res.status(200).json({ fileName: req.file.originalname, data: aiResponse });
   } catch (error: any) {
     console.error('Middleware error:', error);
     res.status(500).json({ error: error.message });

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "typeRoots": ["./types", "node_modules/@types"],
-    "target": "es5",
+    "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "nodenext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
