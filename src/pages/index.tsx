@@ -1,6 +1,13 @@
-import Head from 'next/head';
+/**
+ * External dependencies
+ */
 import { Inter } from 'next/font/google';
-import FileUploadForm from '@/components/FileUpload';
+import Head from 'next/head';
+
+/**
+ * Internal dependencies
+ */
+import FileUploadForm from '@Components/FileUpload';
 
 const inter = Inter({ subsets: ['latin'] });
 

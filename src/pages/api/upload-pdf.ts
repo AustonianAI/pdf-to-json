@@ -1,9 +1,15 @@
+/**
+ * External dependencies
+ */
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
 import multer, { Multer } from 'multer';
 
-import { extractText } from '@/utils/pdf';
-import { aiPdfHandler } from '@/utils/ai';
+/**
+ * Internal dependencies
+ */
+import { extractText } from '@Utils/pdf';
+import { aiPdfHandler } from '@Utils/ai';
 
 const upload: Multer = multer({ storage: multer.memoryStorage() });
 const uploadMiddleware = upload.single('pdf');
