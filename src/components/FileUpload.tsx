@@ -4,11 +4,13 @@ import { useState, useCallback } from 'react';
 import DropZone from './Dropzone';
 import clsx from 'clsx';
 import RawJsonDisplay from './RawJsonDisplay';
+import Spinner from './Spinner';
 
 export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
   const [isDropActive, setIsDropActive] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [rawJson, setRawJson] = useState(null);
 
   const onDragStateChange = useCallback((dragActive: boolean) => {
@@ -30,6 +32,7 @@ export default function FileUploadForm() {
 
     // reset the raw JSON data
     setRawJson(null);
+    setIsLoading(true);
 
     try {
       const formData = new FormData();
@@ -55,6 +58,8 @@ export default function FileUploadForm() {
     } catch (error) {
       console.error('Error uploading file:', error);
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -106,7 +111,7 @@ export default function FileUploadForm() {
           type="submit"
           className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"
         >
-          Submit
+          {isLoading ? <Spinner /> : 'Submit'}
         </button>
       </form>
       {rawJson && <RawJsonDisplay data={rawJson} />}
