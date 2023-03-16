@@ -23,7 +23,7 @@ export const sample_schema: Record<string, SchemaProperty> = {
   },
   menu_items: {
     description:
-      'Every menu item the restaurant offers, including desserts and beverages',
+      'The entrees or main dishes served at the restaurant.  Include up to 10 items.',
     type: 'array',
     items: {
       menu_item_name: {
@@ -36,18 +36,18 @@ export const sample_schema: Record<string, SchemaProperty> = {
         type: 'string',
         example: '$10',
       },
-      menu_item_description: {
-        description:
-          'A tantalizing, one sentence description of the menu item using the ingredients listed.',
-        type: 'string',
-        example: 'A juicy beef burger with lettuce, tomato, and cheese.',
-      },
-      menu_item_category: {
-        description:
-          'The category of the menu item, such as "Appetizer", "Entree", or "Dessert", or "Beverage", etc.',
-        type: 'string',
-        example: 'Entree',
-      },
+      // menu_item_description: {
+      //   description:
+      //     'A tantalizing, one sentence description of the menu item using the ingredients listed.',
+      //   type: 'string',
+      //   example: 'A juicy beef burger with lettuce, tomato, and cheese.',
+      // },
+      // menu_item_category: {
+      //   description:
+      //     'The category of the menu item, such as "Appetizer", "Entree", or "Dessert", or "Beverage", etc.',
+      //   type: 'string',
+      //   example: 'Entree',
+      // },
     },
   },
   menu_price_range: {

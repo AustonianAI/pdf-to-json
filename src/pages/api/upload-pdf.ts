@@ -8,7 +8,6 @@ import multer, { Multer } from 'multer';
 /**
  * Internal dependencies
  */
-import { extractText } from '@Utils/pdf';
 import { aiPdfHandler } from '@Utils/ai';
 
 const upload: Multer = multer({ storage: multer.memoryStorage() });
@@ -28,10 +27,7 @@ handler.post(async (req, res) => {
       throw new Error('No file received');
     }
 
-    // Get the Blob from the file
-    const blob = new Blob([req.file.buffer], { type: 'application/pdf' });
-
-    const aiResponse = await aiPdfHandler(blob);
+    const aiResponse = await aiPdfHandler(req.file.buffer);
 
     res.status(200).json({ fileName: req.file.originalname, data: aiResponse });
   } catch (error: any) {
