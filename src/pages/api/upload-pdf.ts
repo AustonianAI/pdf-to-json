@@ -1,11 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import nextConnect from "next-connect";
-import multer, { Multer } from "multer";
-import type { Field } from "multer";
-import pdfParse from "pdf-parse";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import nextConnect from 'next-connect';
+import multer, { Multer } from 'multer';
+
+import { extractText } from '@/utils/pdf';
+import { aiPdfHandler } from '@/utils/ai';
 
 const upload: Multer = multer({ storage: multer.memoryStorage() });
-const uploadMiddleware = upload.single("pdf");
+const uploadMiddleware = upload.single('pdf');
 
 type ExtendedNextApiRequest = NextApiRequest & {
   file: Express.Multer.File;
@@ -18,24 +19,17 @@ handler.use(uploadMiddleware);
 handler.post(async (req, res) => {
   try {
     if (!req.file) {
-      throw new Error("No file received");
+      throw new Error('No file received');
     }
 
-    console.log("Request received");
-    console.log("File name:", req.file.originalname);
+    // Get the Blob from the file
+    const blob = new Blob([req.file.buffer], { type: 'application/pdf' });
 
-    // Extract text content from the PDF
-    const dataBuffer: Buffer = req.file.buffer;
-    const pdfData = await pdfParse(dataBuffer);
-    const extractedText: string = pdfData.text;
+    const aiResponse = await aiPdfHandler(blob);
 
-    console.log("Extracted text:", extractedText);
-
-    res
-      .status(200)
-      .json({ fileName: req.file.originalname, text: extractedText });
+    res.status(200).json({ fileName: req.file.originalname, data: aiResponse });
   } catch (error: any) {
-    console.error("Middleware error:", error);
+    console.error('Middleware error:', error);
     res.status(500).json({ error: error.message });
   }
 });
