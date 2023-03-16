@@ -25,7 +25,9 @@ export default function Home() {
       </Head>
       <main>
         <div className="max-w-lg p-6 mx-4 my-10 text-center bg-white rounded-lg shadow-2xl sm:p-8 sm:mx-auto">
-          <h3 className="mb-4 text-lg font-bold leading-6">Upload a PDF</h3>
+          <h3 className="mb-4 text-lg font-bold leading-6">
+            Upload a Restaurant Menu as a PDF
+          </h3>
           <FileUploadForm />
         </div>
       </main>
