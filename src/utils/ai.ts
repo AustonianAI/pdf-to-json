@@ -12,7 +12,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-export const aiPdfHandler = async (fileBuffer: Buffer, dataSchema: Schema) => {
+export const aiPdfHandler = async (fileBuffer: Buffer, dataSchema?: Schema) => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
