@@ -1,63 +1,68 @@
 import { Configuration, OpenAIApi } from 'openai';
 
 import { sample_schema } from './data_schema';
-import { generateSchemaSummary } from './schema';
+import { generateSchemaSummaries } from './schema';
 import { extractText } from './pdf';
 import { Schema } from '@Types/schemaTypes';
 import { document_metadata_schema } from '@Types/metaDataTypes';
+import { arrayBuffer } from 'stream/consumers';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
-export const aiPdfHandler = async (fileBuffer: Buffer) => {
+export const aiPdfHandler = async (fileBuffer: Buffer, dataSchema: Schema) => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
   const metadata = await getDocumentMetaData(documentText);
 
-  console.log(metadata);
+  const schemaToUse = dataSchema || sample_schema;
 
-  const prompt = buildPrompt(documentText);
+  const prompts = buildPromptArray(metadata, documentText, schemaToUse);
 
-  // Query to OpenAI API
+  const aiResponsesPromises = prompts.map(prompt =>
+    createChatCompletion(openai, prompt),
+  );
+
   try {
-    const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-    });
-
-    const message = response.data.choices[0]?.message?.content;
-
-    if (!message) {
-      throw new Error('No message returned from OpenAI');
-    } else {
-      return JSON.parse(message);
-    }
-  } catch (error: any) {
-    console.error('Error creating completion:', error);
+    const aiResponses = await Promise.all(aiResponsesPromises);
+    return zipObjects(aiResponses);
+  } catch (error) {
+    console.error('Error in processing all the API calls:', error);
   }
 };
 
-const buildPrompt = (documentText: string, schema?: Schema) => {
-  let prompt = 'I have the following text from a document:\n\n';
+const buildPromptArray = (
+  metadata: any,
+  documentText: string,
+  schema: Schema,
+) => {
+  const schemaSummaries: string[] = generateSchemaSummaries(schema);
+
+  //loop through each schema summary and build a prompt
+  const prompts: string[] = [];
+
+  for (const summary of schemaSummaries) {
+    const prompt = buildPrompt(metadata, documentText, summary);
+    prompts.push(prompt);
+  }
+
+  return prompts;
+};
+
+const buildPrompt = (metadata: any, documentText: string, summary: string) => {
+  let prompt = `I have the following document text, which from a(n) ${metadata.type} called ${metadata.name} :\n\n`;
 
   prompt += documentText;
 
-  prompt += '\n\nI need a JSON object that follows the schema below:\n\n';
+  prompt += '\n\nCreate JSON data about this text in the format below:\n\n';
 
-  const schemaToUse = schema || sample_schema;
-
-  prompt += generateSchemaSummary(schemaToUse);
+  prompt += summary;
 
   prompt +=
-    '\n\nIf any piece of data is unclear, leave the field null.  Respond with only JSON.\n\n###';
+    '\n\nLeave unknown fields null. Response with only JSON in the exact example schema.\n\n###';
 
   return prompt;
 };
@@ -65,14 +70,12 @@ const buildPrompt = (documentText: string, schema?: Schema) => {
 const getDocumentMetaData = async (documentText: string) => {
   let prompt = 'I have the following text from a document:\n\n';
   prompt += documentText;
-  prompt += '\n\nI need a JSON object that follows the schema below:\n\n';
+  prompt += '\n\nCreate JSON data about this text in the format below:\n\n';
 
-  prompt += generateSchemaSummary(document_metadata_schema);
+  prompt += generateSchemaSummaries(document_metadata_schema)[0];
 
   prompt +=
-    '\n\nIf any piece of data is unclear, leave the field null.  Respond with only JSON.\n\n###';
-
-  console.log(prompt);
+    '\n\nLeave unknown fields null. Response with only JSON in the exact example schema.\n\n###';
 
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
@@ -93,13 +96,36 @@ const getDocumentMetaData = async (documentText: string) => {
   }
 };
 
-const countTokens = (text: string): number => {
-  // Split the text on spaces and common punctuation marks
-  const words = text.split(/[\s,.?!;()]+/);
+const zipObjects = (aiResponse: any[]): any => {
+  return Object.assign({}, ...aiResponse);
+};
 
-  // Filter out empty strings caused by consecutive delimiters
-  const nonEmptyWords = words.filter(word => word.length > 0);
+const createChatCompletion = async (
+  openai: OpenAIApi,
+  prompt: string,
+): Promise<any> => {
+  try {
+    const response = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      temperature: 0.5,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+    });
 
-  // Return the approximate token count
-  return nonEmptyWords.length;
+    const message = response.data.choices[0]?.message?.content;
+
+    if (!message) {
+      throw new Error('No message returned from OpenAI');
+    } else {
+      console.log('completed prompt');
+      return JSON.parse(message);
+    }
+  } catch (error: any) {
+    console.error('Error creating completion:', error);
+    throw error;
+  }
 };

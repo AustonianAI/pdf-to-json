@@ -21,35 +21,32 @@ export const sample_schema: Record<string, SchemaProperty> = {
     type: 'string',
     example: 'American',
   },
-  // menu_items: {
-  //   description:
-  //     'The entrees or main dishes served at the restaurant.  Include up to 10 items.',
-  //   type: 'array',
-  //   items: {
-  //     menu_item_name: {
-  //       description: 'The title of the menu item',
-  //       type: 'string',
-  //       example: 'Burger',
-  //     },
-  //     menu_item_price: {
-  //       description: 'The price of the menu item',
-  //       type: 'string',
-  //       example: '$10',
-  //     },
-  //     // menu_item_description: {
-  //     //   description:
-  //     //     'A tantalizing, one sentence description of the menu item using the ingredients listed.',
-  //     //   type: 'string',
-  //     //   example: 'A juicy beef burger with lettuce, tomato, and cheese.',
-  //     // },
-  //     // menu_item_category: {
-  //     //   description:
-  //     //     'The category of the menu item, such as "Appetizer", "Entree", or "Dessert", or "Beverage", etc.',
-  //     //   type: 'string',
-  //     //   example: 'Entree',
-  //     // },
-  //   },
-  // },
+  food_items: {
+    description: 'The food items on the menu. Do not include beverages',
+    type: 'array',
+    items: {
+      name: {
+        description: 'The title of the food item',
+        type: 'string',
+        example: 'The Classic Burger',
+      },
+      price: {
+        description: 'The price of the food item',
+        type: 'string',
+        example: '$10',
+      },
+      // description: {
+      //   description: 'A short phrase describing the item',
+      //   type: 'string',
+      //   example: 'A delicious and hearty buger.',
+      // },
+      category: {
+        description: 'The category of the food item.',
+        type: 'string',
+        example: 'Entrees',
+      },
+    },
+  },
   menu_price_range: {
     description:
       'The price range of the restaurant expressed as $, $$, $$$, or $$$$',
