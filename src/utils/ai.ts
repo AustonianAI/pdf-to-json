@@ -12,13 +12,15 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-export const aiPdfHandler = async (fileBuffer: Buffer, dataSchema?: Schema) => {
+export const aiPdfHandler = async (fileBuffer: Buffer) => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
+  console.log(documentText);
+
   const metadata = await getDocumentMetaData(documentText);
 
-  const schemaToUse = dataSchema || sample_schema;
+  const schemaToUse = sample_schema;
 
   const prompts = buildPromptArray(metadata, documentText, schemaToUse);
 
