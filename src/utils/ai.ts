@@ -5,7 +5,6 @@ import { generateSchemaSummaries } from './schema';
 import { extractText } from './pdf';
 import { Schema } from '@Types/schemaTypes';
 import { document_metadata_schema } from '@Types/metaDataTypes';
-import { arrayBuffer } from 'stream/consumers';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -16,9 +15,16 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
-  const metadata = await getDocumentMetaData(documentText);
+  let metadata;
+  try {
+    metadata = await getDocumentMetaData(documentText);
 
-  console.log(metadata);
+    console.log('metadata', metadata);
+  } catch (error) {
+    console.error('Error in getting document metadata:', error);
+  }
+
+  // need to figure out why this is not working in the next deployment
 
   const schemaToUse = sample_schema;
 
