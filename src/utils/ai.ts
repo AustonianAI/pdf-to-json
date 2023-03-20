@@ -15,6 +15,8 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
+  console.log('documentText', documentText);
+
   let metadata;
   try {
     metadata = await getDocumentMetaData(documentText);
