@@ -35,16 +35,6 @@ export const sample_schema: Record<string, SchemaProperty> = {
         type: 'string',
         example: '$10',
       },
-      // description: {
-      //   description: 'A short phrase describing the item',
-      //   type: 'string',
-      //   example: 'A delicious and hearty burger.',
-      // },
-      // category: {
-      //   description: 'The category of the food item.',
-      //   type: 'string',
-      //   example: 'Entrees',
-      // },
     },
   },
   menu_price_range: {

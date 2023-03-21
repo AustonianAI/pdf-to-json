@@ -5,7 +5,7 @@ import { generateSchemaSummaries } from './buildSchemaPrompt';
 import { extractText } from './pdf';
 import { Schema } from '@Types/schemaTypes';
 import { document_metadata_schema } from '@Types/metaDataTypes';
-import { createJsonObject } from './createSchemaJson';
+import { createJsonObject } from './generateObject';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -20,7 +20,7 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
   try {
     metadata = await getDocumentMetaData(documentText);
   } catch (error) {
-    console.error('Error in getting document metadata:', error);
+    console.error('Error getting document metadata:', error);
   }
 
   const schemaToUse = sample_schema;
@@ -34,7 +34,9 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
   try {
     const aiResponses = await Promise.all(aiResponsesPromises);
 
-    console.log('aiResponses:', aiResponses);
+    const resultJson = createJsonObject(aiResponses, schemaToUse);
+
+    console.log(resultJson);
 
     return 'hello world!!!!';
     return zipObjects(aiResponses);
@@ -145,10 +147,6 @@ function convertArrayStringToJson(jsonString: string): string {
   const closedBrackets = (jsonString.match(/\]/g) || []).length;
   const missingBrackets = openedBrackets - closedBrackets;
 
-  console.log('missingBrackets:', missingBrackets);
-
-  console.log('jsonString:', jsonString);
-
   if (missingBrackets > 0) {
     // Check if the last character is not a double quote
     if (jsonString[jsonString.length - 1] !== '"') {
@@ -158,19 +156,30 @@ function convertArrayStringToJson(jsonString: string): string {
       jsonString += ']';
     }
   }
-  // Remove leading/trailing white spaces and newline characters
-  const trimmedString = jsonString.trim();
 
-  // Remove the trailing comma before the closing bracket
-  const fixedString = trimmedString.replace(/,\s*\]$/, ']');
+  try {
+    // Remove leading/trailing white spaces and newline characters
+    const trimmedString = jsonString.trim();
 
-  const afterParse = JSON.parse(fixedString);
+    // Remove the trailing comma before the closing bracket
+    const fixedString = trimmedString.replace(/,\s*\]$/, ']');
 
-  if (missingBrackets > 0) {
-    const partialItem = afterParse.pop();
+    const afterParse = JSON.parse(fixedString);
 
-    console.log('partialItem:', partialItem);
+    if (missingBrackets > 0) {
+      afterParse.pop();
+    }
+
+    return afterParse;
+  } catch (error) {
+    console.error('Error parsing JSON string:', jsonString);
+
+    throw new Error('Error parsing JSON string');
   }
-
-  return afterParse;
+}
+function parseData(
+  aiResponses: any[],
+  schemaToUse: Record<string, import('@Types/schemaTypes').SchemaProperty>,
+) {
+  throw new Error('Function not implemented.');
 }
