@@ -129,8 +129,6 @@ const createChatCompletion = async (
 
     const message = response.data.choices[0]?.message?.content;
 
-    console.log(message);
-
     if (!message) {
       throw new Error('No message returned from OpenAI');
     } else {
@@ -147,16 +145,19 @@ function convertArrayStringToJson(jsonString: string): string {
   const closedBrackets = (jsonString.match(/\]/g) || []).length;
   const missingBrackets = openedBrackets - closedBrackets;
 
+  console.log('missingBrackets:', missingBrackets);
+
+  console.log('jsonString:', jsonString);
+
   if (missingBrackets > 0) {
+    // Check if the last character is not a double quote
+    if (jsonString[jsonString.length - 1] !== '"') {
+      jsonString += '"';
+    }
     for (let i = 0; i < missingBrackets; i++) {
-      if (i === 0) {
-        // testing pull request
-        jsonString += '"';
-      }
       jsonString += ']';
     }
   }
-
   // Remove leading/trailing white spaces and newline characters
   const trimmedString = jsonString.trim();
 
