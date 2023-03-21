@@ -150,6 +150,7 @@ function convertArrayStringToJson(jsonString: string): string {
   if (missingBrackets > 0) {
     for (let i = 0; i < missingBrackets; i++) {
       if (i === 0) {
+        // testing pull request
         jsonString += '"';
       }
       jsonString += ']';
