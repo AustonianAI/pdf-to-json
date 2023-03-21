@@ -15,18 +15,12 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
-  console.log('documentText', documentText);
-
   let metadata;
   try {
     metadata = await getDocumentMetaData(documentText);
-
-    console.log('metadata', metadata);
   } catch (error) {
     console.error('Error in getting document metadata:', error);
   }
-
-  // need to figure out why this is not working in the next deployment
 
   const schemaToUse = sample_schema;
 
@@ -38,6 +32,8 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
 
   try {
     const aiResponses = await Promise.all(aiResponsesPromises);
+
+    return 'hello world!!!!';
     return zipObjects(aiResponses);
   } catch (error) {
     console.error('Error in processing all the API calls:', error);
@@ -63,16 +59,17 @@ const buildPromptArray = (
 };
 
 const buildPrompt = (metadata: any, documentText: string, summary: string) => {
-  let prompt = `I have the following document text, which from a(n) ${metadata.type} called ${metadata.name} :\n\n`;
+  let prompt = `I have the following document text, which from a(n) ${metadata[0]} called ${metadata[0]} :\n\n`;
 
   prompt += documentText;
 
-  prompt += '\n\nCreate JSON data about this text in the format below:\n\n';
+  prompt +=
+    '\n\nCreate an ordered list as a valid Javascript array with data about this text in the format below:\n\n';
 
   prompt += summary;
 
   prompt +=
-    '\n\nLeave unknown fields null. Response with only JSON in the exact example schema.\n\n###';
+    '\n\nIf a data field is unknown, use a null value. Respond with only a valid Javascript array in the exact exmaple schema.\n\n###';
 
   return prompt;
 };
@@ -80,12 +77,13 @@ const buildPrompt = (metadata: any, documentText: string, summary: string) => {
 const getDocumentMetaData = async (documentText: string) => {
   let prompt = 'I have the following text from a document:\n\n';
   prompt += documentText;
-  prompt += '\n\nCreate JSON data about this text in the format below:\n\n';
+  prompt +=
+    '\n\nCreate an ordered list as a valid Javascript array with data about this text in the format below:\n\n';
 
   prompt += generateSchemaSummaries(document_metadata_schema)[0];
 
   prompt +=
-    '\n\nLeave unknown fields null. Response with only JSON in the exact example schema.\n\n###';
+    '\n\nIf a data field is unknown, use a null value. Respond with only a valid Javascript array in the exact exmaple schema.\n\n###';
 
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
@@ -102,7 +100,7 @@ const getDocumentMetaData = async (documentText: string) => {
   if (!message) {
     throw new Error('No message returned from OpenAI');
   } else {
-    return JSON.parse(message);
+    return message;
   }
 };
 
@@ -127,6 +125,10 @@ const createChatCompletion = async (
     });
 
     const message = response.data.choices[0]?.message?.content;
+
+    console.log(message);
+
+    return;
 
     if (!message) {
       throw new Error('No message returned from OpenAI');
