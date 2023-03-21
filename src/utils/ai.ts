@@ -1,10 +1,11 @@
 import { Configuration, OpenAIApi } from 'openai';
 
 import { sample_schema } from './data_schema';
-import { generateSchemaSummaries } from './schema';
+import { generateSchemaSummaries } from './buildSchemaPrompt';
 import { extractText } from './pdf';
 import { Schema } from '@Types/schemaTypes';
 import { document_metadata_schema } from '@Types/metaDataTypes';
+import { createJsonObject } from './createSchemaJson';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -32,6 +33,8 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
 
   try {
     const aiResponses = await Promise.all(aiResponsesPromises);
+
+    console.log('aiResponses:', aiResponses);
 
     return 'hello world!!!!';
     return zipObjects(aiResponses);
@@ -128,16 +131,44 @@ const createChatCompletion = async (
 
     console.log(message);
 
-    return;
-
     if (!message) {
       throw new Error('No message returned from OpenAI');
     } else {
-      console.log('completed prompt');
-      return JSON.parse(message);
+      return convertArrayStringToJson(message);
     }
   } catch (error: any) {
     console.error('Error creating completion:', error);
     throw error;
   }
 };
+
+function convertArrayStringToJson(jsonString: string): string {
+  const openedBrackets = (jsonString.match(/\[/g) || []).length;
+  const closedBrackets = (jsonString.match(/\]/g) || []).length;
+  const missingBrackets = openedBrackets - closedBrackets;
+
+  if (missingBrackets > 0) {
+    for (let i = 0; i < missingBrackets; i++) {
+      if (i === 0) {
+        jsonString += '"';
+      }
+      jsonString += ']';
+    }
+  }
+
+  // Remove leading/trailing white spaces and newline characters
+  const trimmedString = jsonString.trim();
+
+  // Remove the trailing comma before the closing bracket
+  const fixedString = trimmedString.replace(/,\s*\]$/, ']');
+
+  const afterParse = JSON.parse(fixedString);
+
+  if (missingBrackets > 0) {
+    const partialItem = afterParse.pop();
+
+    console.log('partialItem:', partialItem);
+  }
+
+  return afterParse;
+}
