@@ -21,30 +21,24 @@ export const sample_schema: Record<string, SchemaProperty> = {
     type: 'string',
     example: 'American',
   },
-  entree_items: {
-    description:
-      'The entree items on the menu. Do not include beverages, appetizers, or desserts.',
+  food_items: {
+    description: 'All of the food items on the menu.',
     type: 'array',
     items: {
-      name: {
-        description: 'The title of the entree item',
+      food_name: {
+        description: 'The title of the food item',
         type: 'string',
         example: 'The Classic Burger',
       },
-      price: {
-        description: 'The price of the entree item',
+      food_price: {
+        description: 'The price of the food item',
         type: 'string',
         example: '$10',
       },
-      // description: {
-      //   description: 'A short phrase describing the item',
+      // food_description: {
+      //   description: 'A description of the food item',
       //   type: 'string',
-      //   example: 'A delicious and hearty burger.',
-      // },
-      // category: {
-      //   description: 'The category of the food item.',
-      //   type: 'string',
-      //   example: 'Entrees',
+      //   example: 'A classic burger with lettuce, tomato, and pickles',
       // },
     },
   },
