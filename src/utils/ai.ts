@@ -1,7 +1,7 @@
 import { Configuration, OpenAIApi } from 'openai';
 
 import { sample_schema } from './data_schema';
-import { generateSchemaSummaries } from './buildSchemaPrompt';
+import { PromptObject, generatePromptObjects } from './buildSchemaPrompt';
 import { extractText } from './pdf';
 import { Schema } from '@Types/schemaTypes';
 import { document_metadata_schema } from '@Types/metaDataTypes';
@@ -27,16 +27,18 @@ export const aiPdfHandler = async (fileBuffer: Buffer) => {
 
   const prompts = buildPromptArray(metadata, documentText, schemaToUse);
 
-  const aiResponsesPromises = prompts.map(prompt =>
-    createChatCompletion(openai, prompt),
-  );
+  const aiResponsesPromises = prompts
+    .map(subPrompt => {
+      if (subPrompt.prompt) {
+        return createChatCompletion(openai, subPrompt);
+      }
+    })
+    .filter(promise => promise !== undefined);
 
   try {
     const aiResponses = await Promise.all(aiResponsesPromises);
 
-    const resultJson = createJsonObject(aiResponses, schemaToUse);
-
-    console.log(resultJson);
+    console.log('aiResponse', aiResponses);
 
     return 'hello world!!!!';
     return zipObjects(aiResponses);
@@ -50,17 +52,16 @@ const buildPromptArray = (
   documentText: string,
   schema: Schema,
 ) => {
-  const schemaSummaries: string[] = generateSchemaSummaries(schema);
+  const promptObjects: PromptObject[] = generatePromptObjects(schema);
 
-  //loop through each schema summary and build a prompt
-  const prompts: string[] = [];
+  // loop over each prompt object
+  promptObjects.forEach(subPrompt => {
+    const { summary } = subPrompt;
 
-  for (const summary of schemaSummaries) {
-    const prompt = buildPrompt(metadata, documentText, summary);
-    prompts.push(prompt);
-  }
+    subPrompt.prompt = buildPrompt(metadata, documentText, summary);
+  });
 
-  return prompts;
+  return promptObjects;
 };
 
 const buildPrompt = (metadata: any, documentText: string, summary: string) => {
@@ -85,7 +86,7 @@ const getDocumentMetaData = async (documentText: string) => {
   prompt +=
     '\n\nCreate an ordered list as a valid Javascript array with data about this text in the format below:\n\n';
 
-  prompt += generateSchemaSummaries(document_metadata_schema)[0];
+  prompt += generatePromptObjects(document_metadata_schema)[0].summary;
 
   prompt +=
     '\n\nIf a data field is unknown, use a null value. Respond with only a valid Javascript array in the exact exmaple schema.\n\n###';
@@ -115,16 +116,20 @@ const zipObjects = (aiResponse: any[]): any => {
 
 const createChatCompletion = async (
   openai: OpenAIApi,
-  prompt: string,
-): Promise<any> => {
+  promptObject: PromptObject,
+): Promise<PromptObject> => {
   try {
+    if (!promptObject.prompt) {
+      return promptObject;
+    }
+
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       temperature: 0.5,
       messages: [
         {
           role: 'user',
-          content: prompt,
+          content: promptObject.prompt,
         },
       ],
     });
@@ -134,7 +139,12 @@ const createChatCompletion = async (
     if (!message) {
       throw new Error('No message returned from OpenAI');
     } else {
-      return convertArrayStringToJson(message);
+      // copy the prompt object
+      const resultPromptObject = { ...promptObject };
+      resultPromptObject.output = convertTextToValidArray(message);
+
+      console.log(resultPromptObject);
+      return resultPromptObject;
     }
   } catch (error: any) {
     console.error('Error creating completion:', error);
@@ -142,7 +152,7 @@ const createChatCompletion = async (
   }
 };
 
-function convertArrayStringToJson(jsonString: string): string {
+function convertTextToValidArray(jsonString: string): string {
   const openedBrackets = (jsonString.match(/\[/g) || []).length;
   const closedBrackets = (jsonString.match(/\]/g) || []).length;
   const missingBrackets = openedBrackets - closedBrackets;
@@ -176,10 +186,4 @@ function convertArrayStringToJson(jsonString: string): string {
 
     throw new Error('Error parsing JSON string');
   }
-}
-function parseData(
-  aiResponses: any[],
-  schemaToUse: Record<string, import('@Types/schemaTypes').SchemaProperty>,
-) {
-  throw new Error('Function not implemented.');
 }

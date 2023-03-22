@@ -21,22 +21,22 @@ export const sample_schema: Record<string, SchemaProperty> = {
     type: 'string',
     example: 'American',
   },
-  menu_items: {
-    description: 'All of the food items on the mnenu.',
-    type: 'array',
-    items: {
-      name: {
-        description: 'The title of the menu item',
-        type: 'string',
-        example: 'The Classic Burger',
-      },
-      price: {
-        description: 'The price of the menu item',
-        type: 'string',
-        example: '$10',
-      },
-    },
-  },
+  // menu_items: {
+  //   description: 'All of the food items on the mnenu.',
+  //   type: 'array',
+  //   items: {
+  //     name: {
+  //       description: 'The title of the menu item',
+  //       type: 'string',
+  //       example: 'The Classic Burger',
+  //     },
+  //     price: {
+  //       description: 'The price of the menu item',
+  //       type: 'string',
+  //       example: '$10',
+  //     },
+  //   },
+  // },
   menu_price_range: {
     description:
       'The price range of the restaurant expressed as $, $$, $$$, or $$$$',

@@ -1,5 +1,12 @@
 import { Schema, SchemaProperty } from '../types/schemaTypes';
 
+export type PromptObject = {
+  summary: string;
+  schema: Schema;
+  prompt?: string;
+  output?: string;
+};
+
 export const generateSubSchemaSummary = (
   schema: Schema,
   includeArrays: boolean = true,
@@ -46,40 +53,41 @@ const generateExample = (
   return example;
 };
 
-export const generateSchemaSummaries = (schema: Schema): any[] => {
-  const summaries: any[] = [];
+export const generatePromptObjects = (schema: Schema): PromptObject[] => {
+  const promptObjects: PromptObject[] = [];
 
   const mainSchemaKeys = generateSubSchemaSummary(schema, false);
-
   const mainSchemaExample = generateExample(schema, mainSchemaKeys, false);
-  summaries.push(
-    `[ "${mainSchemaKeys.join(
+  const mainPrompt: PromptObject = {
+    summary: `[ "${mainSchemaKeys.join(
       '", "',
     )}" ]\n\nAn example of the data in this format is \n [ "${mainSchemaExample.join(
       '", "',
     )}" ] `,
-  );
+    schema: schema,
+  };
+  promptObjects.push(mainPrompt);
 
   for (const key in schema) {
     const property = schema[key];
-
     if (property.type === 'array' && property.items) {
       const arraySchemaKeys = generateSubSchemaSummary(property.items, true);
-
       const arraySchemaExample = generateExample(
         property.items,
         arraySchemaKeys,
         true,
       );
-      summaries.push(
-        `[ [ "${arraySchemaKeys.join(
+      const arrayPrompt: PromptObject = {
+        summary: `[ "${key}" ]\n[ [ "${arraySchemaKeys.join(
           '", "',
-        )}"] ]\n\nEach item should be in a nested array, like this example: \n [ [ "${arraySchemaExample.join(
+        )}" ] ]\n\nEach item should be in a nested array, like this example: \n [ [ "${arraySchemaExample.join(
           '", "',
         )}" ] ]`,
-      );
+        schema: { [key]: property },
+      };
+      promptObjects.push(arrayPrompt);
     }
   }
 
-  return summaries;
+  return promptObjects;
 };
