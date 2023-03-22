@@ -1,57 +1,12 @@
-import { Configuration, OpenAIApi } from 'openai';
-
-import { sample_schema } from './data_schema';
 import { PromptObject, generatePromptObjects } from './buildSchemaPrompt';
-import { extractText } from './pdf';
+import { OpenAIApi } from 'openai';
 import { Schema } from '@Types/schemaTypes';
-import { document_metadata_schema } from '@Types/metaDataTypes';
-import { createJsonObject } from './generateObject';
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-
-export const aiPdfHandler = async (fileBuffer: Buffer) => {
-  // Extract the text from the PDF
-  const documentText = await extractText(fileBuffer);
-
-  let metadata;
-  try {
-    metadata = await getDocumentMetaData(documentText);
-  } catch (error) {
-    console.error('Error getting document metadata:', error);
-  }
-
-  const schemaToUse = sample_schema;
-
-  const prompts = buildPromptArray(metadata, documentText, schemaToUse);
-
-  const aiResponsesPromises = prompts
-    .map(subPrompt => {
-      if (subPrompt.prompt) {
-        return createChatCompletion(openai, subPrompt);
-      }
-    })
-    .filter(promise => promise !== undefined);
-
-  try {
-    const aiResponses = await Promise.all(aiResponsesPromises);
-
-    console.log('aiResponse', aiResponses);
-
-    return 'hello world!!!!';
-    return zipObjects(aiResponses);
-  } catch (error) {
-    console.error('Error in processing all the API calls:', error);
-  }
-};
-
-const buildPromptArray = (
+export const buildPromptArray = (
   metadata: any,
   documentText: string,
   schema: Schema,
-) => {
+): PromptObject[] => {
   const promptObjects: PromptObject[] = generatePromptObjects(schema);
 
   // loop over each prompt object
@@ -64,7 +19,11 @@ const buildPromptArray = (
   return promptObjects;
 };
 
-const buildPrompt = (metadata: any, documentText: string, summary: string) => {
+const buildPrompt = (
+  metadata: any,
+  documentText: string,
+  summary: string,
+): string => {
   let prompt = `I have the following document text, which from a(n) ${metadata[0]} called ${metadata[0]} :\n\n`;
 
   prompt += documentText;
@@ -75,46 +34,12 @@ const buildPrompt = (metadata: any, documentText: string, summary: string) => {
   prompt += summary;
 
   prompt +=
-    '\n\nIf a data field is unknown, use a null value. Respond with only a valid Javascript array in the exact exmaple schema.\n\n###';
+    '\n\nIf a data field is unknown, use a null value. Respond with only a valid Javascript array in the exact example schema.\n\n###';
 
   return prompt;
 };
 
-const getDocumentMetaData = async (documentText: string) => {
-  let prompt = 'I have the following text from a document:\n\n';
-  prompt += documentText;
-  prompt +=
-    '\n\nCreate an ordered list as a valid Javascript array with data about this text in the format below:\n\n';
-
-  prompt += generatePromptObjects(document_metadata_schema)[0].summary;
-
-  prompt +=
-    '\n\nIf a data field is unknown, use a null value. Respond with only a valid Javascript array in the exact exmaple schema.\n\n###';
-
-  const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages: [
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
-  });
-
-  const message = response.data.choices[0]?.message?.content;
-
-  if (!message) {
-    throw new Error('No message returned from OpenAI');
-  } else {
-    return message;
-  }
-};
-
-const zipObjects = (aiResponse: any[]): any => {
-  return Object.assign({}, ...aiResponse);
-};
-
-const createChatCompletion = async (
+export const createChatCompletion = async (
   openai: OpenAIApi,
   promptObject: PromptObject,
 ): Promise<PromptObject> => {

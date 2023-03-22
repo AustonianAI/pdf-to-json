@@ -8,7 +8,7 @@ import multer, { Multer } from 'multer';
 /**
  * Internal dependencies
  */
-import { aiPdfHandler } from '@Utils/ai';
+import { aiPdfHandler } from '@Utils/aiPdfHandler';
 
 const upload: Multer = multer({ storage: multer.memoryStorage() });
 const uploadMiddleware = upload.single('pdf');
