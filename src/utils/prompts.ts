@@ -24,7 +24,7 @@ const buildPrompt = (
   documentText: string,
   summary: string,
 ): string => {
-  let prompt = `I have the following document text, which from a(n) ${metadata[0]} called ${metadata[0]} :\n\n`;
+  let prompt = `I have the following document text, which from a(n) ${metadata[1]} called ${metadata[0]} :\n\n`;
 
   prompt += documentText;
 
@@ -50,7 +50,7 @@ export const createChatCompletion = async (
 
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
-      temperature: 0.5,
+      temperature: 0.4,
       messages: [
         {
           role: 'user',
@@ -68,7 +68,6 @@ export const createChatCompletion = async (
       const resultPromptObject = { ...promptObject };
       resultPromptObject.output = convertTextToValidArray(message);
 
-      console.log(resultPromptObject);
       return resultPromptObject;
     }
   } catch (error: any) {
@@ -77,7 +76,7 @@ export const createChatCompletion = async (
   }
 };
 
-function convertTextToValidArray(jsonString: string): string {
+function convertTextToValidArray(jsonString: string): any[] {
   const openedBrackets = (jsonString.match(/\[/g) || []).length;
   const closedBrackets = (jsonString.match(/\]/g) || []).length;
   const missingBrackets = openedBrackets - closedBrackets;

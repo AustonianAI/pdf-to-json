@@ -5,6 +5,7 @@ import { openai } from './api';
 import { buildPromptArray, createChatCompletion } from './prompts';
 import { generatePromptObjects } from './buildSchemaPrompt';
 import { document_metadata_schema } from '@Types/metaDataTypes';
+import { generateJsonObject } from './generateObject';
 
 export const aiPdfHandler = async (fileBuffer: Buffer): Promise<any> => {
   // Extract the text from the PDF
@@ -30,12 +31,13 @@ export const aiPdfHandler = async (fileBuffer: Buffer): Promise<any> => {
     .filter(promise => promise !== undefined);
 
   try {
-    const aiResponses = await Promise.all(aiResponsesPromises);
-
-    console.log('aiResponse', aiResponses);
-
-    return 'hello world!!!!';
-    return zipObjects(aiResponses);
+    const completedPromptObjects = await Promise.all(aiResponsesPromises);
+    const resultObjectArr = completedPromptObjects.map(completedPromptObj => {
+      if (completedPromptObj?.output) {
+        return generateJsonObject(completedPromptObj);
+      }
+    });
+    return zipObjects(resultObjectArr);
   } catch (error) {
     console.error('Error in processing all the API calls:', error);
   }
@@ -67,7 +69,7 @@ const getDocumentMetaData = async (documentText: string) => {
   if (!message) {
     throw new Error('No message returned from OpenAI');
   } else {
-    return message;
+    return JSON.parse(message);
   }
 };
 

@@ -4,12 +4,14 @@ export type PromptObject = {
   summary: string;
   schema: Schema;
   prompt?: string;
-  output?: string;
+  output?: any[];
 };
+
+type ArrayHandling = 'include' | 'exclude' | 'only';
 
 export const generateSubSchemaSummary = (
   schema: Schema,
-  includeArrays: boolean = true,
+  arrayHandling: ArrayHandling = 'include',
 ): string[] => {
   const summary: string[] = [];
 
@@ -17,10 +19,10 @@ export const generateSubSchemaSummary = (
     const property = schema[key];
 
     if (property.type === 'array' && property.items) {
-      if (includeArrays) {
+      if (arrayHandling === 'include' || arrayHandling === 'only') {
         summary.push(`${key} (${property.type}): ${property.description}`);
       }
-    } else {
+    } else if (arrayHandling === 'include' || arrayHandling === 'exclude') {
       summary.push(`${key} (${property.type}): ${property.description}`);
     }
   }
@@ -31,21 +33,26 @@ export const generateSubSchemaSummary = (
 const generateExample = (
   schema: Schema,
   schemaKeys: string[],
-  includeArrays: boolean = true,
+  arrayHandling: ArrayHandling = 'include',
 ): any[] => {
   const example: any[] = [];
 
   for (const key of schemaKeys) {
     const property = schema[key.split(' ')[0]];
 
-    if (property.type === 'array' && property.items && includeArrays) {
-      example.push([
+    if (
+      property.type === 'array' &&
+      property.items &&
+      (arrayHandling === 'include' || arrayHandling === 'only')
+    ) {
+      example.push(
         generateExample(
           property.items,
-          generateSubSchemaSummary(property.items, true),
+          generateSubSchemaSummary(property.items, 'include'),
+          'only', // <-- Keep this line as is
         ),
-      ]);
-    } else {
+      );
+    } else if (arrayHandling === 'include' || arrayHandling === 'exclude') {
       example.push(property.example);
     }
   }
@@ -56,29 +63,41 @@ const generateExample = (
 export const generatePromptObjects = (schema: Schema): PromptObject[] => {
   const promptObjects: PromptObject[] = [];
 
-  const mainSchemaKeys = generateSubSchemaSummary(schema, false);
-  const mainSchemaExample = generateExample(schema, mainSchemaKeys, false);
+  const mainSchemaKeys = generateSubSchemaSummary(schema, 'exclude');
+  const mainSchemaExample = generateExample(schema, mainSchemaKeys, 'exclude');
+
+  // Filter out subarray properties from the main schema
+  const filteredMainSchema: Schema = {};
+  for (const key in schema) {
+    if (schema[key].type !== 'array') {
+      filteredMainSchema[key] = schema[key];
+    }
+  }
+
   const mainPrompt: PromptObject = {
     summary: `[ "${mainSchemaKeys.join(
       '", "',
     )}" ]\n\nAn example of the data in this format is \n [ "${mainSchemaExample.join(
       '", "',
     )}" ] `,
-    schema: schema,
+    schema: filteredMainSchema,
   };
   promptObjects.push(mainPrompt);
 
   for (const key in schema) {
     const property = schema[key];
     if (property.type === 'array' && property.items) {
-      const arraySchemaKeys = generateSubSchemaSummary(property.items, true);
+      const arraySchemaKeys = generateSubSchemaSummary(
+        property.items,
+        'include',
+      );
       const arraySchemaExample = generateExample(
         property.items,
         arraySchemaKeys,
-        true,
+        'include',
       );
       const arrayPrompt: PromptObject = {
-        summary: `[ "${key}" ]\n[ [ "${arraySchemaKeys.join(
+        summary: `[ [ "${arraySchemaKeys.join(
           '", "',
         )}" ] ]\n\nEach item should be in a nested array, like this example: \n [ [ "${arraySchemaExample.join(
           '", "',
