@@ -3,7 +3,6 @@ import { OpenAIApi } from 'openai';
 import { Schema } from '@Types/schemaTypes';
 
 export const buildPromptArray = (
-  metadata: any,
   documentText: string,
   schema: Schema,
 ): PromptObject[] => {
@@ -13,18 +12,14 @@ export const buildPromptArray = (
   promptObjects.forEach(subPrompt => {
     const { summary } = subPrompt;
 
-    subPrompt.prompt = buildPrompt(metadata, documentText, summary);
+    subPrompt.prompt = buildPrompt(documentText, summary);
   });
 
   return promptObjects;
 };
 
-const buildPrompt = (
-  metadata: any,
-  documentText: string,
-  summary: string,
-): string => {
-  let prompt = `I have the following document text, which from a(n) ${metadata[1]} called ${metadata[0]} :\n\n`;
+const buildPrompt = (documentText: string, summary: string): string => {
+  let prompt = `I have the following document text :\n\n`;
 
   prompt += documentText;
 

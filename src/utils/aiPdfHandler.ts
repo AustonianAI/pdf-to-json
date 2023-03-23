@@ -11,16 +11,9 @@ export const aiPdfHandler = async (fileBuffer: Buffer): Promise<any> => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
-  let metadata;
-  try {
-    metadata = await getDocumentMetaData(documentText);
-  } catch (error) {
-    console.error('Error getting document metadata:', error);
-  }
-
   const schemaToUse = sample_schema;
 
-  const prompts = buildPromptArray(metadata, documentText, schemaToUse);
+  const prompts = buildPromptArray(documentText, schemaToUse);
 
   const aiResponsesPromises = prompts
     .map(subPrompt => {
@@ -40,36 +33,6 @@ export const aiPdfHandler = async (fileBuffer: Buffer): Promise<any> => {
     return zipObjects(resultObjectArr);
   } catch (error) {
     console.error('Error in processing all the API calls:', error);
-  }
-};
-
-const getDocumentMetaData = async (documentText: string) => {
-  let prompt = 'I have the following text from a document:\n\n';
-  prompt += documentText;
-  prompt +=
-    '\n\nCreate an ordered list as a valid Javascript array with data about this text in the format below:\n\n';
-
-  prompt += generatePromptObjects(document_metadata_schema)[0].summary;
-
-  prompt +=
-    '\n\nIf a data field is unknown, use a null value. Respond with only a valid Javascript array in the exact exmaple schema.\n\n###';
-
-  const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages: [
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
-  });
-
-  const message = response.data.choices[0]?.message?.content;
-
-  if (!message) {
-    throw new Error('No message returned from OpenAI');
-  } else {
-    return JSON.parse(message);
   }
 };
 
