@@ -24,7 +24,19 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="max-w-lg p-6 mx-4 my-10 text-center bg-white rounded-lg shadow-2xl sm:p-8 sm:mx-auto">
+        <div className="mx-auto max-w-3xl sm:text-center">
+          <h2 className="text-base font-semibold leading-7 text-indigo-400">
+            Generate Structured Data
+          </h2>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Convert a PDF to JSON
+          </p>
+          <p className="mt-6 text-lg leading-8 text-gray-300">
+            Use this handy tool to generated structured data from an uploaded
+            PDF file using your own data schema.
+          </p>
+        </div>
+        <div className="max-w-3xl p-6 mx-4 my-10 text-center bg-white rounded-lg shadow-2xl sm:p-8 sm:mx-auto">
           <h3 className="mb-4 text-lg font-bold leading-6">
             Upload a Restaurant Menu as a PDF
           </h3>

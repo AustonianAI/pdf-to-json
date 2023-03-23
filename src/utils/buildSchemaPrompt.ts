@@ -1,6 +1,7 @@
 import { Schema, SchemaProperty } from '../types/schemaTypes';
 
 export type PromptObject = {
+  id: number;
   summary: string;
   schema: Schema;
   prompt?: string;
@@ -60,6 +61,8 @@ const generateExample = (
   return example;
 };
 
+let currentPromptId = 1;
+
 export const generatePromptObjects = (schema: Schema): PromptObject[] => {
   const promptObjects: PromptObject[] = [];
 
@@ -75,6 +78,7 @@ export const generatePromptObjects = (schema: Schema): PromptObject[] => {
   }
 
   const mainPrompt: PromptObject = {
+    id: currentPromptId++,
     summary: `[ "${mainSchemaKeys.join(
       '", "',
     )}" ]\n\nAn example of the data in this format is \n [ "${mainSchemaExample.join(
@@ -97,6 +101,7 @@ export const generatePromptObjects = (schema: Schema): PromptObject[] => {
         'include',
       );
       const arrayPrompt: PromptObject = {
+        id: currentPromptId++,
         summary: `[ [ "${arraySchemaKeys.join(
           '", "',
         )}" ] ]\n\nEach item should be in a nested array, like this example: \n [ [ "${arraySchemaExample.join(

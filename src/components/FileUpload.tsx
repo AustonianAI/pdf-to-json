@@ -6,6 +6,11 @@ import clsx from 'clsx';
 import RawJsonDisplay from './RawJsonDisplay';
 import Spinner from './Spinner';
 
+import { Schema } from '@Types/schemaTypes';
+import SchemaPropertyInput, {
+  SchemaPropertyWithTitle,
+} from './SchemaPropertyInput';
+
 export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
   const [isDropActive, setIsDropActive] = useState(false);
@@ -26,17 +31,63 @@ export default function FileUploadForm() {
       setFile(event.target.files[0]);
   };
 
+  const [schemaProperties, setSchemaProperties] = useState<
+    SchemaPropertyWithTitle[]
+  >([
+    {
+      title: '',
+      description: '',
+      type: 'string',
+      example: '',
+    },
+  ]);
+
+  const handleAddSchemaProperty = () => {
+    if (schemaProperties.length < 10) {
+      setSchemaProperties([
+        ...schemaProperties,
+        {
+          title: '',
+          description: '',
+          type: 'string',
+          example: '',
+        },
+      ]);
+    }
+  };
+
+  const handleSchemaPropertyChange = (
+    index: number,
+    property: SchemaPropertyWithTitle,
+  ) => {
+    const updatedSchemaProperties = [...schemaProperties];
+    updatedSchemaProperties[index] = property;
+    setSchemaProperties(updatedSchemaProperties);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!file) return;
 
-    // reset the raw JSON data
-    setRawJson(null);
-    setIsLoading(true);
+    // Create schema object from schemaProperties array
+    const schema: Schema = schemaProperties.reduce(
+      (acc, property) => ({
+        ...acc,
+        [property.title]: {
+          description: property.description,
+          type: property.type,
+          example: property.example,
+        },
+      }),
+      {},
+    );
 
     try {
       const formData = new FormData();
       formData.append('pdf', file);
+      formData.append('schema', JSON.stringify(schema));
+
+      console.log(formData.get('schema'));
 
       const response = await fetch('/api/upload-pdf', {
         method: 'POST',
@@ -107,6 +158,36 @@ export default function FileUploadForm() {
             )}
           </label>
         </DropZone>
+
+        <div className="my-4 text-left space-y-2">
+          <div>
+            <h2 className="text-lg font-medium leading-6 text-gray-900">
+              Data Structure
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Define the data structure that you would like to generate.
+            </p>
+          </div>
+
+          {schemaProperties.map((property, index) => (
+            <SchemaPropertyInput
+              key={index}
+              index={index}
+              property={property}
+              onChange={handleSchemaPropertyChange}
+            />
+          ))}
+          {schemaProperties.length < 10 && (
+            <button
+              type="button"
+              onClick={handleAddSchemaProperty}
+              className="px-4 py-2 mt-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:ring-2 focus:ring-green-400"
+            >
+              Add Schema Property
+            </button>
+          )}
+        </div>
+
         <button
           type="submit"
           className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"

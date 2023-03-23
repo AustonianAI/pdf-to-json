@@ -43,9 +43,12 @@ export const createChatCompletion = async (
       return promptObject;
     }
 
+    console.log('Firing prompt ID:', promptObject.id, '...');
+    console.time('Execution Time for Prompt ID: ' + promptObject.id);
+
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
-      temperature: 0.4,
+      temperature: 0.2,
       messages: [
         {
           role: 'user',
@@ -53,6 +56,9 @@ export const createChatCompletion = async (
         },
       ],
     });
+
+    console.log('Prompt ID:', promptObject.id, 'completed.');
+    console.timeEnd('Execution Time for Prompt ID: ' + promptObject.id);
 
     const message = response.data.choices[0]?.message?.content;
 
