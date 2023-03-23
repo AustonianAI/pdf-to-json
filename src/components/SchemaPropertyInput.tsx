@@ -19,12 +19,12 @@ const SchemaPropertyInput: React.FC<{
   };
 
   return (
-    <div className="border border-gray-200 p-4 rounded mb-2 space-y-2">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="border border-gray-200 p-2 rounded mb-2">
+      <div className="grid grid-cols-1 gap-1 md:grid-cols-3">
         <div>
           <label
             htmlFor={`title-${index}`}
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-xs font-medium leading-5 text-gray-900"
           >
             Data Title
           </label>
@@ -34,9 +34,9 @@ const SchemaPropertyInput: React.FC<{
             id={`title-${index}`}
             value={property.title}
             onChange={handlePropertyChange}
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 
-          ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset 
-          focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 
+            ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset 
+            focus:ring-indigo-600 text-xs leading-5"
             placeholder="e.g. Invoice ID"
           />
         </div>
@@ -44,7 +44,7 @@ const SchemaPropertyInput: React.FC<{
         <div>
           <label
             htmlFor={`type-${index}`}
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-xs font-medium leading-5 text-gray-900"
           >
             Data Type
           </label>
@@ -54,9 +54,9 @@ const SchemaPropertyInput: React.FC<{
             id={`type-${index}`}
             value={property.type}
             onChange={handlePropertyChange}
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 
-            ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 
-            sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 
+            ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset 
+            focus:ring-indigo-600 text-xs leading-5"
           >
             <option value="string">Text</option>
             <option value="number">Number</option>
@@ -67,9 +67,9 @@ const SchemaPropertyInput: React.FC<{
         <div>
           <label
             htmlFor={`example-${index}`}
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-xs font-medium leading-5 text-gray-900"
           >
-            Example Value
+            Example
           </label>
 
           <input
@@ -78,9 +78,9 @@ const SchemaPropertyInput: React.FC<{
             id={`example-${index}`}
             value={property.example?.toString() || ''}
             onChange={handlePropertyChange}
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 
+            className="block w-full rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 
             ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset 
-            focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            focus:ring-indigo-600 text-xs leading-5"
             placeholder="e.g. 81464-B"
           />
         </div>
@@ -89,20 +89,20 @@ const SchemaPropertyInput: React.FC<{
       <div>
         <label
           htmlFor={`description-${index}`}
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-xs font-medium leading-5 text-gray-900"
         >
           Description
         </label>
-        <div className="mt-2">
+        <div>
           <input
             type="text"
             name="description"
             id={`description-${index}`}
             value={property.description}
             onChange={handlePropertyChange}
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 
+            className="block w-full rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 
             ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset 
-            focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            focus:ring-indigo-600 text-xs leading-5"
             placeholder="e.g. The identifying number of the invoice."
           />
         </div>

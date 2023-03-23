@@ -6,6 +6,8 @@ import clsx from 'clsx';
 import RawJsonDisplay from './RawJsonDisplay';
 import Spinner from './Spinner';
 
+import { AiOutlinePlus, AiOutlineClose } from 'react-icons/ai'; // Import the necessary icons
+
 import { Schema } from '@Types/schemaTypes';
 import SchemaPropertyInput, {
   SchemaPropertyWithTitle,
@@ -54,6 +56,12 @@ export default function FileUploadForm() {
         },
       ]);
     }
+  };
+
+  const handleRemoveSchemaProperty = (index: number) => {
+    const updatedSchemaProperties = [...schemaProperties];
+    updatedSchemaProperties.splice(index, 1);
+    setSchemaProperties(updatedSchemaProperties);
   };
 
   const handleSchemaPropertyChange = (
@@ -115,87 +123,109 @@ export default function FileUploadForm() {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <DropZone
-          onDragStateChange={onDragStateChange}
-          onFilesDrop={onFilesDrop}
-          className={clsx(
-            'relative w-full h-48 mb-4',
-            'border-2 border-dashed rounded-xl',
-            isDropActive
-              ? 'bg-blue-200 border-blue-500'
-              : 'bg-gray-100 border-gray-300',
-          )}
-        >
-          <input
-            type="file"
-            id="fileUpload"
-            className="absolute top-0 left-0 invisible w-full h-full"
-            onChange={handleFileChange}
-            accept="application/pdf"
-          />
-          <label
-            htmlFor="fileUpload"
-            className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-gray-700 cursor-pointer"
-          >
-            {file && file.name ? (
-              <div>
-                {file.name}
-                <br />
-                <span className="text-blue-500 hover:text-blue-700">
-                  Change PDF
-                </span>
-              </div>
-            ) : (
-              <div>
-                Drag and drop a PDF here, or
-                <br />
-                <span className="text-blue-500 hover:text-blue-700">
-                  browse your device
-                </span>
-                .
-              </div>
-            )}
-          </label>
-        </DropZone>
-
-        <div className="my-4 text-left space-y-2">
-          <div>
-            <h2 className="text-lg font-medium leading-6 text-gray-900">
-              Data Structure
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Define the data structure that you would like to generate.
-            </p>
-          </div>
-
-          {schemaProperties.map((property, index) => (
-            <SchemaPropertyInput
-              key={index}
-              index={index}
-              property={property}
-              onChange={handleSchemaPropertyChange}
-            />
-          ))}
-          {schemaProperties.length < 10 && (
-            <button
-              type="button"
-              onClick={handleAddSchemaProperty}
-              className="px-4 py-2 mt-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:ring-2 focus:ring-green-400"
+      <form onSubmit={handleSubmit} className="flex flex-wrap items-start">
+        <div className="w-full lg:w-1/3 p-1">
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <DropZone
+              onDragStateChange={onDragStateChange}
+              onFilesDrop={onFilesDrop}
+              className={clsx(
+                'relative w-full h-48',
+                'border-2 border-dashed rounded-xl',
+                isDropActive
+                  ? 'bg-blue-200 border-blue-500'
+                  : 'bg-gray-100 border-gray-300',
+              )}
             >
-              Add Schema Property
-            </button>
-          )}
+              <input
+                type="file"
+                id="fileUpload"
+                className="absolute top-0 left-0 invisible w-full h-full"
+                onChange={handleFileChange}
+                accept="application/pdf"
+              />
+              <label
+                htmlFor="fileUpload"
+                className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-gray-700 cursor-pointer"
+              >
+                {file && file.name ? (
+                  <div>
+                    {file.name}
+                    <br />
+                    <span className="text-blue-500 hover:text-blue-700">
+                      Change PDF
+                    </span>
+                  </div>
+                ) : (
+                  <div>
+                    Drag and drop a PDF here, or
+                    <br />
+                    <span className="text-blue-500 hover:text-blue-700">
+                      browse your device
+                    </span>
+                    .
+                  </div>
+                )}
+              </label>
+            </DropZone>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-6 mt-2">
+            <div className="mt-auto">
+              <button
+                type="submit"
+                className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"
+              >
+                {isLoading ? <Spinner /> : 'Extract Data'}
+              </button>
+            </div>
+            <div className="flex flex-col h-full">
+              <div className="mb-4">
+                {rawJson ? (
+                  <RawJsonDisplay data={rawJson} />
+                ) : (
+                  <p className="text-gray-500">
+                    The extracted data will be displayed here.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <button
-          type="submit"
-          className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"
-        >
-          {isLoading ? <Spinner /> : 'Submit'}
-        </button>
+        <div className="w-full lg:w-2/3 p-1">
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <div className="text-left">
+              {schemaProperties.map((property, index) => (
+                <div className="relative" key={index}>
+                  <SchemaPropertyInput
+                    index={index}
+                    property={property}
+                    onChange={handleSchemaPropertyChange}
+                  />
+                  {schemaProperties.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveSchemaProperty(index)}
+                      className="absolute top-0 right-0 p-1 text-red-500 hover:text-red-700"
+                    >
+                      <AiOutlineClose size={24} />
+                    </button>
+                  )}
+                </div>
+              ))}
+              {schemaProperties.length < 10 && (
+                <button
+                  type="button"
+                  onClick={handleAddSchemaProperty}
+                  className="flex items-center px-4 py-2 mt-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:ring-2 focus:ring-green-400"
+                >
+                  <AiOutlinePlus size={24} className="mx-2" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       </form>
-      {rawJson && <RawJsonDisplay data={rawJson} />}
     </>
   );
 }
