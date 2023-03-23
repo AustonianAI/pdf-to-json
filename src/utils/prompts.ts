@@ -24,12 +24,12 @@ const buildPrompt = (documentText: string, summary: string): string => {
   prompt += documentText;
 
   prompt +=
-    '\n\nCreate an ordered list as a valid Javascript array with data about this text in the format below.  Do not include field names or datatypes in the data.\n\n';
+    '\n\nCreate a valid Javascript array with data about this text in the format below.\n\n';
 
   prompt += summary;
 
   prompt +=
-    '\n\nIf a data field is unknown, use a null value. Respond with only a valid Javascript array in the exact example schema.\n\n###';
+    '\n\nIf a data field is unknown, use a null value. Respond with only with the data value as a Javascript array in the exact format of the example.\n\n###';
 
   return prompt;
 };
@@ -63,8 +63,6 @@ export const createChatCompletion = async (
     console.timeEnd('Execution Time for Prompt ID: ' + promptObject.id);
 
     const message = response.data.choices[0]?.message?.content;
-
-    console.log(message);
 
     if (!message) {
       throw new Error('No message returned from OpenAI');

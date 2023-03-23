@@ -22,7 +22,7 @@ export const generatePromptObjects = (schema: Schema): PromptObject[] => {
     if (property.type !== 'array') {
       filteredMainSchema[key] = property;
       mainSchemaSummary.push(
-        `${key} (${property.type}): ${property.description}`,
+        `{${key} is a ${property.type} with the following description- ${property.description}}`,
       );
       mainSchemaExample.push(property.example);
     } else {
@@ -33,7 +33,7 @@ export const generatePromptObjects = (schema: Schema): PromptObject[] => {
         for (const subKey in property.items) {
           const subProperty = property.items[subKey];
           arraySchemaSummary.push(
-            `${subKey} (${subProperty.type}): ${subProperty.description}`,
+            `{${subKey} is a ${subProperty.type} with the following description- ${subProperty.description}}`,
           );
           arraySchemaExample.push(subProperty.example);
         }
@@ -56,7 +56,7 @@ export const generatePromptObjects = (schema: Schema): PromptObject[] => {
     id: currentPromptId++,
     summary: `[ "${mainSchemaSummary.join(
       '", "',
-    )}" ]\n\nAn example of the data in this format is \n [ "${mainSchemaExample.join(
+    )}" ]\n\nAn example of the data in this expected format is \n [ "${mainSchemaExample.join(
       '", "',
     )}" ] `,
     schema: filteredMainSchema,
