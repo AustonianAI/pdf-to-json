@@ -24,7 +24,7 @@ const buildPrompt = (documentText: string, summary: string): string => {
   prompt += documentText;
 
   prompt +=
-    '\n\nCreate an ordered list as a valid Javascript array with data about this text in the format below:\n\n';
+    '\n\nCreate an ordered list as a valid Javascript array with data about this text in the format below.  Do not include field names or datatypes in the data.\n\n';
 
   prompt += summary;
 
