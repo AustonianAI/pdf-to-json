@@ -9,6 +9,7 @@ import multer, { Multer } from 'multer';
  * Internal dependencies
  */
 import { aiPdfHandler } from '@Utils/aiPdfHandler';
+import { Schema } from '@Types/schemaTypes';
 
 const upload: Multer = multer({ storage: multer.memoryStorage() });
 const uploadMiddleware = upload.single('pdf');
@@ -27,7 +28,10 @@ handler.post(async (req, res) => {
       throw new Error('No file received');
     }
 
-    const aiResponse = await aiPdfHandler(req.file.buffer);
+    // Get the schema from the formData
+    const schema: Schema = JSON.parse(req.body.schema);
+
+    const aiResponse = await aiPdfHandler(req.file.buffer, schema);
 
     res.status(200).json({ fileName: req.file.originalname, data: aiResponse });
   } catch (error: any) {

@@ -36,7 +36,7 @@ export default function Home() {
             PDF file using your own data schema.
           </p>
         </div>
-        <div className="p-4">
+        <div className="py-2">
           <FileUploadForm />
         </div>
       </main>

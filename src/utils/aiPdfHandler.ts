@@ -6,12 +6,16 @@ import { buildPromptArray, createChatCompletion } from './prompts';
 import { generatePromptObjects } from './buildSchemaPrompt';
 import { document_metadata_schema } from '@Types/metaDataTypes';
 import { generateJsonObject } from './generateObject';
+import { Schema } from '@Types/schemaTypes';
 
-export const aiPdfHandler = async (fileBuffer: Buffer): Promise<any> => {
+export const aiPdfHandler = async (
+  fileBuffer: Buffer,
+  schema: Schema,
+): Promise<any> => {
   // Extract the text from the PDF
   const documentText = await extractText(fileBuffer);
 
-  const schemaToUse = sample_schema;
+  const schemaToUse = schema || sample_schema;
 
   const prompts = buildPromptArray(documentText, schemaToUse);
 

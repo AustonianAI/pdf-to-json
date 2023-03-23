@@ -43,12 +43,14 @@ export const createChatCompletion = async (
       return promptObject;
     }
 
+    console.log(promptObject.prompt);
+
     console.log('Firing prompt ID:', promptObject.id, '...');
     console.time('Execution Time for Prompt ID: ' + promptObject.id);
 
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
-      temperature: 0.2,
+      temperature: 0.5,
       messages: [
         {
           role: 'user',
@@ -61,6 +63,8 @@ export const createChatCompletion = async (
     console.timeEnd('Execution Time for Prompt ID: ' + promptObject.id);
 
     const message = response.data.choices[0]?.message?.content;
+
+    console.log(message);
 
     if (!message) {
       throw new Error('No message returned from OpenAI');
@@ -91,6 +95,8 @@ function convertTextToValidArray(jsonString: string): any[] {
       jsonString += ']';
     }
   }
+
+  console.log('the converting string is: ', jsonString);
 
   try {
     // Remove leading/trailing white spaces and newline characters
