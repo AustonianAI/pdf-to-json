@@ -18,6 +18,7 @@ export default function FileUploadForm() {
   const [isDropActive, setIsDropActive] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [rawJson, setRawJson] = useState(null);
 
   const onDragStateChange = useCallback((dragActive: boolean) => {
@@ -91,6 +92,8 @@ export default function FileUploadForm() {
     );
 
     setRawJson(null);
+    setIsLoading(true);
+    setErrorMessage('');
 
     try {
       const formData = new FormData();
@@ -103,7 +106,8 @@ export default function FileUploadForm() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.error);
       }
 
       const { data } = await response.json();
@@ -114,8 +118,8 @@ export default function FileUploadForm() {
       }
 
       console.log('AI RESPONSE JSON:', data);
-    } catch (error) {
-      console.error('Error uploading file:', error);
+    } catch (error: any) {
+      setErrorMessage(`${error.message}`);
     }
 
     setIsLoading(false);
@@ -213,6 +217,9 @@ export default function FileUploadForm() {
               >
                 {isLoading ? <Spinner /> : 'Generate Data'}
               </button>
+            </div>
+            <div className="mt-4 text-red-600">
+              {errorMessage && <p>{errorMessage}</p>}
             </div>
             <div className="flex flex-col h-full">
               <div className="mb-4">

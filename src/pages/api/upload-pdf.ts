@@ -35,7 +35,6 @@ handler.post(async (req, res) => {
 
     res.status(200).json({ fileName: req.file.originalname, data: aiResponse });
   } catch (error: any) {
-    console.error('Middleware error:', error);
     res.status(500).json({ error: error.message });
   }
 });
