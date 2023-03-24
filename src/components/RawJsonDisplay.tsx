@@ -1,4 +1,6 @@
 import React, { FC } from 'react';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { atomOneLight } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 
 interface RawJsonDisplayProps {
   data: Record<string, any>;
@@ -6,10 +8,13 @@ interface RawJsonDisplayProps {
 
 const RawJsonDisplay: FC<RawJsonDisplayProps> = ({ data }) => {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md max-w-md">
-      <pre className="text-sm font-mono whitespace-pre-wrap text-left">
+    <div className="max-w-md p-4 text-sm bg-white rounded-lg shadow-md">
+      <SyntaxHighlighter language="json" style={atomOneLight}>
+        {/* <pre className="text-sm text-left whitespace-pre-wrap">
+        
+      </pre> */}
         {JSON.stringify(data, null, 2)}
-      </pre>
+      </SyntaxHighlighter>
     </div>
   );
 };
