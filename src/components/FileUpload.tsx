@@ -14,24 +14,23 @@ import SchemaPropertyInput, {
 } from './SchemaPropertyInput';
 
 export default function FileUploadForm() {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [isDropActive, setIsDropActive] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [rawJson, setRawJson] = useState(null);
+  const [rawJson, setRawJson] = useState<any[]>([]);
 
   const onDragStateChange = useCallback((dragActive: boolean) => {
     setIsDropActive(dragActive);
   }, []);
 
   const onFilesDrop = useCallback((files: File[]) => {
-    if (files && files.length > 0) setFile(files[0]);
+    if (files && files.length > 0) setFiles(files);
   }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0)
-      setFile(event.target.files[0]);
+    if (event.target.files) setFiles(Array.from(event.target.files));
   };
 
   const [schemaProperties, setSchemaProperties] = useState<
@@ -76,7 +75,7 @@ export default function FileUploadForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!file) return;
+    if (!files.length) return;
 
     // Create schema object from schemaProperties array
     const schema: Schema = schemaProperties.reduce(
@@ -91,33 +90,39 @@ export default function FileUploadForm() {
       {},
     );
 
-    setRawJson(null);
+    setRawJson([]);
     setIsLoading(true);
     setErrorMessage('');
 
     try {
-      const formData = new FormData();
-      formData.append('pdf', file);
-      formData.append('schema', JSON.stringify(schema));
+      // Iterate through each file and send individual requests
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('pdf', file);
+        formData.append('schema', JSON.stringify(schema));
 
-      const response = await fetch('/api/upload-pdf', {
-        method: 'POST',
-        body: formData,
-      });
+        const response = await fetch('/api/upload-pdf', {
+          method: 'POST',
+          body: formData,
+        });
 
-      if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.error);
+        if (!response.ok) {
+          const errorResponse = await response.json();
+          throw new Error(errorResponse.error);
+        }
+
+        const { data } = await response.json();
+
+        // Set the raw JSON data
+        if (data) {
+          // Append the data object to the same array in rawJson state
+          setRawJson(prevRawJson => {
+            return prevRawJson ? [...prevRawJson, data] : [data];
+          });
+        }
+
+        console.log('AI RESPONSE JSON:', data);
       }
-
-      const { data } = await response.json();
-
-      // Set the raw JSON data
-      if (data) {
-        setRawJson(data);
-      }
-
-      console.log('AI RESPONSE JSON:', data);
     } catch (error: any) {
       setErrorMessage(`${error.message}`);
     }
@@ -182,22 +187,23 @@ export default function FileUploadForm() {
                 className="absolute top-0 left-0 invisible w-full h-full"
                 onChange={handleFileChange}
                 accept="application/pdf"
+                multiple
               />
               <label
                 htmlFor="fileUpload"
                 className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-gray-700 cursor-pointer"
               >
-                {file && file.name ? (
+                {files.length ? (
                   <div>
-                    {file.name}
+                    {files.length} file(s) selected
                     <br />
                     <span className="text-blue-500 hover:text-blue-700">
-                      Change PDF
+                      Change PDF(s)
                     </span>
                   </div>
                 ) : (
                   <div>
-                    Drag and drop a PDF here, or
+                    Drag and drop PDFs here, or
                     <br />
                     <span className="text-blue-500 hover:text-blue-700">
                       browse your device
@@ -223,7 +229,7 @@ export default function FileUploadForm() {
             </div>
             <div className="flex flex-col h-full">
               <div className="mb-4">
-                {rawJson ? (
+                {rawJson.length ? (
                   <RawJsonDisplay data={rawJson} />
                 ) : (
                   <p className="text-gray-500">
