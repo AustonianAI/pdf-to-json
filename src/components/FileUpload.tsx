@@ -124,8 +124,8 @@ export default function FileUploadForm() {
   return (
     <>
       <form onSubmit={handleSubmit} className="flex flex-wrap items-start">
-        <div className="w-full lg:w-3/5 p-1">
-          <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="w-full p-1 lg:w-3/5">
+          <div className="p-6 bg-white rounded-lg shadow-md">
             <h2 className="mb-4 text-lg font-semibold">Define Your Data</h2>
             <div className="text-left">
               {schemaProperties.map((property, index) => (
@@ -134,6 +134,7 @@ export default function FileUploadForm() {
                     index={index}
                     property={property}
                     onChange={handleSchemaPropertyChange}
+                    className="p-3 pb-4 mb-2 bg-gray-100 rounded-lg"
                   />
                   {schemaProperties.length > 1 && (
                     <button
@@ -158,8 +159,8 @@ export default function FileUploadForm() {
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-2/5 p-1">
-          <div className="bg-white shadow-md rounded-lg p-6 mb-4 lg:mb-0">
+        <div className="w-full p-1 lg:w-2/5">
+          <div className="p-6 mb-4 bg-white rounded-lg shadow-md lg:mb-0">
             <h2 className="mb-4 text-lg font-semibold">Upload Your PDF</h2>
             <DropZone
               onDragStateChange={onDragStateChange}
@@ -204,7 +205,7 @@ export default function FileUploadForm() {
               </label>
             </DropZone>
           </div>
-          <div className="bg-white shadow-md rounded-lg p-6 mt-2">
+          <div className="p-6 mt-2 bg-white rounded-lg shadow-md">
             <h2 className="mb-4 text-lg font-semibold">Generate Data</h2>
             <div className="mt-auto">
               <button
