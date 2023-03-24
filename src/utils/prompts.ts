@@ -43,8 +43,6 @@ export const createChatCompletion = async (
       return promptObject;
     }
 
-    console.log(promptObject.prompt);
-
     console.log('Firing prompt ID:', promptObject.id, '...');
     console.time('Execution Time for Prompt ID: ' + promptObject.id);
 
@@ -74,7 +72,7 @@ export const createChatCompletion = async (
       return resultPromptObject;
     }
   } catch (error: any) {
-    console.error('Error creating completion:', error);
+    console.error('Error creating completion');
     throw error;
   }
 };
@@ -93,8 +91,6 @@ function convertTextToValidArray(jsonString: string): any[] {
       jsonString += ']';
     }
   }
-
-  console.log('the converting string is: ', jsonString);
 
   try {
     // Remove leading/trailing white spaces and newline characters
