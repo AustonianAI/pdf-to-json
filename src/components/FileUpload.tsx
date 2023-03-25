@@ -353,15 +353,6 @@ export default function FileUploadForm() {
             </DropZone>
           </div>
           <div className="p-6 mt-2 bg-white rounded-lg shadow-md">
-            <div className="text-center">
-              <Image
-                width={375}
-                height={150}
-                alt="JSONIFY Illustration"
-                src={JSONIFYIllustration}
-                className="mx-auto"
-              />
-            </div>
             <h2 className="mb-4 text-lg font-semibold">Generate Data</h2>
             <div className="mt-auto">
               <button
@@ -379,9 +370,23 @@ export default function FileUploadForm() {
                 {rawJson.length ? (
                   <RawJsonDisplay data={rawJson} />
                 ) : (
-                  <p className="text-gray-500">
-                    The extracted data will be displayed here.
-                  </p>
+                  <div
+                    className="flex items-center justify-center text-center border border-gray-300 h-96"
+                    style={{ backgroundColor: 'rgb(250, 250, 250)' }}
+                  >
+                    <div>
+                      <Image
+                        width={375}
+                        height={150}
+                        alt="JSONIFY Illustration"
+                        src={JSONIFYIllustration}
+                        className="mx-auto"
+                      />
+                      <p className="text-gray-500">
+                        The extracted data will be displayed here.
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
