@@ -24,7 +24,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="mx-auto max-w-3xl sm:text-center">
+        <div className="max-w-3xl mx-auto sm:text-center">
           <h2 className="text-base font-semibold leading-7 text-indigo-400">
             Generate Structured Data
           </h2>
@@ -32,8 +32,8 @@ export default function Home() {
             Convert a PDF to JSON
           </p>
           <p className="mt-6 text-lg leading-8 text-gray-300">
-            Use this handy tool to generate structured data from an uploaded PDF
-            file using your own data schema.
+            Use this handy tool to JSONIFY generate structured data from an
+            uploaded PDF file using your own data schema.
           </p>
         </div>
         <div className="py-2">
