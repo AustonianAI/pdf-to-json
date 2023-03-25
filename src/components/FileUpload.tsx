@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import DropZone from './Dropzone';
 import clsx from 'clsx';
 import RawJsonDisplay from './RawJsonDisplay';
@@ -10,8 +10,9 @@ import { AiOutlinePlus, AiOutlineClose } from 'react-icons/ai'; // Import the ne
 
 import { Schema } from '@Types/schemaTypes';
 import SchemaPropertyInput, {
-  SchemaPropertyWithTitle,
+  StatefulSchemaPropertyWithTitle,
 } from './SchemaPropertyInput';
+import SchemaContext from '@Context/schema-context';
 
 export default function FileUploadForm() {
   const [files, setFiles] = useState<File[]>([]);
@@ -34,7 +35,7 @@ export default function FileUploadForm() {
   };
 
   const [schemaProperties, setSchemaProperties] = useState<
-    SchemaPropertyWithTitle[]
+    StatefulSchemaPropertyWithTitle[]
   >([
     {
       title: '',
@@ -44,51 +45,119 @@ export default function FileUploadForm() {
     },
   ]);
 
-  const handleAddSchemaProperty = () => {
-    if (schemaProperties.length < 10) {
-      setSchemaProperties([
-        ...schemaProperties,
-        {
-          title: '',
-          description: '',
-          type: 'string',
-          example: '',
-        },
-      ]);
-    }
-  };
+  const memoizedSchemaContext = useMemo(
+    () => ({
+      schemaProperties,
+      handleAddSchemaProperty: (parentIndex?: number) => {
+        if (parentIndex !== undefined) {
+          const parentProperty = schemaProperties[parentIndex];
+          const updatedSubProperties = parentProperty.items || [];
+          updatedSubProperties?.push({
+            title: '',
+            description: '',
+            type: 'string',
+            example: '',
+          });
 
-  const handleRemoveSchemaProperty = (index: number) => {
-    const updatedSchemaProperties = [...schemaProperties];
-    updatedSchemaProperties.splice(index, 1);
-    setSchemaProperties(updatedSchemaProperties);
-  };
+          parentProperty.items = updatedSubProperties;
 
-  const handleSchemaPropertyChange = (
-    index: number,
-    property: SchemaPropertyWithTitle,
-  ) => {
-    const updatedSchemaProperties = [...schemaProperties];
-    updatedSchemaProperties[index] = property;
-    setSchemaProperties(updatedSchemaProperties);
-  };
+          const updatedSchemaProperties = [...schemaProperties];
+          updatedSchemaProperties[parentIndex] = parentProperty;
+          setSchemaProperties(updatedSchemaProperties);
+        } else {
+          if (schemaProperties.length < 10) {
+            setSchemaProperties([
+              ...schemaProperties,
+              {
+                title: '',
+                description: '',
+                type: 'string',
+                example: '',
+              },
+            ]);
+          }
+        }
+      },
+      handleRemoveSchemaProperty: (index: number, parentIndex?: number) => {
+        if (parentIndex !== undefined) {
+          const parentProperty = schemaProperties[parentIndex];
+          const updatedSubProperties = parentProperty.items || [];
+          updatedSubProperties.splice(index, 1);
+
+          parentProperty.items = updatedSubProperties;
+
+          const updatedSchemaProperties = [...schemaProperties];
+          updatedSchemaProperties[parentIndex] = parentProperty;
+          setSchemaProperties(updatedSchemaProperties);
+        } else {
+          const updatedSchemaProperties = [...schemaProperties];
+          updatedSchemaProperties.splice(index, 1);
+          setSchemaProperties(updatedSchemaProperties);
+        }
+      },
+      handleSchemaPropertyChange: (
+        index: number,
+        property: StatefulSchemaPropertyWithTitle,
+        parentIndex?: number,
+      ) => {
+        if (parentIndex !== undefined) {
+          const parentProperty = schemaProperties[parentIndex];
+          const updatedSubProperties = parentProperty.items || [];
+          updatedSubProperties[index] = property;
+
+          parentProperty.items = updatedSubProperties;
+
+          const updatedSchemaProperties = [...schemaProperties];
+          updatedSchemaProperties[parentIndex] = parentProperty;
+          setSchemaProperties(updatedSchemaProperties);
+        } else {
+          const updatedSchemaProperties = [...schemaProperties];
+          updatedSchemaProperties[index] = property;
+          setSchemaProperties(updatedSchemaProperties);
+        }
+      },
+    }),
+    [schemaProperties],
+  );
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!files.length) return;
 
     // Create schema object from schemaProperties array
-    const schema: Schema = schemaProperties.reduce(
-      (acc, property) => ({
-        ...acc,
-        [property.title]: {
-          description: property.description,
-          type: property.type,
-          example: property.example,
-        },
-      }),
-      {},
-    );
+    const schema: Schema = schemaProperties.reduce((acc, property) => {
+      if (property.items !== undefined) {
+        return {
+          ...acc,
+          [property.title]: {
+            description: property.description,
+            type: property.type,
+            items: property.items.reduce(
+              (xcc, item) => ({
+                ...xcc,
+                [item.title]: {
+                  description: item.description,
+                  type: item.type,
+                  example: item.example,
+                },
+              }),
+              {},
+            ),
+          },
+        };
+      } else {
+        return {
+          ...acc,
+          [property.title]: {
+            description: property.description,
+            type: property.type,
+            example: property.example,
+          },
+        };
+      }
+    }, {});
+
+    console.log(schema);
 
     setRawJson([]);
     setIsLoading(true);
@@ -131,7 +200,7 @@ export default function FileUploadForm() {
   };
 
   return (
-    <>
+    <SchemaContext.Provider value={memoizedSchemaContext}>
       <form onSubmit={handleSubmit} className="flex flex-wrap items-start">
         <div className="w-full p-1 lg:w-3/5">
           <div className="p-6 bg-white rounded-lg shadow-md">
@@ -142,13 +211,14 @@ export default function FileUploadForm() {
                   <SchemaPropertyInput
                     index={index}
                     property={property}
-                    onChange={handleSchemaPropertyChange}
                     className="p-3 pb-4 mb-2 bg-gray-100 rounded-lg"
                   />
                   {schemaProperties.length > 1 && (
                     <button
                       type="button"
-                      onClick={() => handleRemoveSchemaProperty(index)}
+                      onClick={() =>
+                        memoizedSchemaContext.handleRemoveSchemaProperty(index)
+                      }
                       className="absolute top-0 right-0 p-1 text-red-500 hover:text-red-700"
                     >
                       <AiOutlineClose size={24} />
@@ -159,8 +229,10 @@ export default function FileUploadForm() {
               {schemaProperties.length < 10 && (
                 <button
                   type="button"
-                  onClick={handleAddSchemaProperty}
                   className="flex items-center px-4 py-2 mt-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:ring-2 focus:ring-green-400"
+                  onClick={() =>
+                    memoizedSchemaContext.handleAddSchemaProperty()
+                  }
                 >
                   <AiOutlinePlus size={24} className="mx-2" /> Add Field
                 </button>
@@ -190,16 +262,17 @@ export default function FileUploadForm() {
                 accept="application/pdf"
                 multiple
               />
+
               <label
                 htmlFor="fileUpload"
-                className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-gray-700 cursor-pointer"
+                className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-center text-gray-700 cursor-pointer"
               >
                 {files.length ? (
                   <div>
-                    {files.length} file(s) selected
+                    {files.length} file&#40;s&#41; selected
                     <br />
                     <span className="text-blue-500 hover:text-blue-700">
-                      Change PDF(s)
+                      Change PDF&#40;s&#41;
                     </span>
                   </div>
                 ) : (
@@ -242,6 +315,6 @@ export default function FileUploadForm() {
           </div>
         </div>
       </form>
-    </>
+    </SchemaContext.Provider>
   );
 }
