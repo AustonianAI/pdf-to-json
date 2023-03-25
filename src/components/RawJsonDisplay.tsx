@@ -8,7 +8,7 @@ interface RawJsonDisplayProps {
 
 const RawJsonDisplay: FC<RawJsonDisplayProps> = ({ data }) => {
   return (
-    <div className="max-w-md p-4 text-sm bg-white rounded-lg shadow-md">
+    <div className="overflow-auto text-xs border border-gray-300 h-96">
       <SyntaxHighlighter language="json" style={atomOneLight}>
         {/* <pre className="text-sm text-left whitespace-pre-wrap">
         

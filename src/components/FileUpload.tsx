@@ -132,13 +132,12 @@ export default function FileUploadForm() {
           [property.title]: {
             description: property.description,
             type: property.type,
-            example: property.example,
             items: property.items.reduce((xcc, item) => ({
               ...xcc,
               [item.title]: {
-                description: property.description,
-                type: property.type,
-                example: property.example,
+                description: item.description,
+                type: item.type,
+                example: item.example,
               },
             })),
           },
@@ -154,6 +153,8 @@ export default function FileUploadForm() {
         };
       }
     }, {});
+
+    console.log(schema);
 
     setRawJson([]);
     setIsLoading(true);
