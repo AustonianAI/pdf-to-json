@@ -14,9 +14,11 @@ const SchemaPropertyInput: React.FC<{
   className?: string;
   isSubProperty?: true;
 }> = ({ index, property, onChange, className, isSubProperty }) => {
-  const [subProperties, setSubProperties] = useState<SchemaPropertyWithTitle[]>(
-    property.items ? Object.values(property.items) : [],
-  );
+  // const [subProperties, setSubProperties] = useState<SchemaPropertyWithTitle[]>(
+  //   property.items ? Object.values(property.items) : [],
+  // );
+
+  const subProperties = property.items ? Object.values(property.items) : [];
 
   const handlePropertyChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -35,7 +37,7 @@ const SchemaPropertyInput: React.FC<{
   ) => {
     const updatedSubProperties = [...subProperties];
     updatedSubProperties[subIndex] = subProperty;
-    setSubProperties(updatedSubProperties);
+    // setSubProperties(updatedSubProperties);
     onChange(index, {
       ...property,
       items: { ...property.items, [subProperty.title]: subProperty },
@@ -53,7 +55,7 @@ const SchemaPropertyInput: React.FC<{
         type: 'string',
         example: '',
       };
-      setSubProperties(updatedSubProperties);
+      // setSubProperties(updatedSubProperties);
       onChange(index, {
         ...property,
         items: {
@@ -156,7 +158,7 @@ const SchemaPropertyInput: React.FC<{
                 <SchemaPropertyInput
                   index={index}
                   property={item}
-                  onChange={() => handleSubPropertyChange(index, item)}
+                  onChange={handleSubPropertyChange}
                   isSubProperty
                 />
               </li>

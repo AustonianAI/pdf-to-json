@@ -190,16 +190,17 @@ export default function FileUploadForm() {
                 accept="application/pdf"
                 multiple
               />
+
               <label
                 htmlFor="fileUpload"
-                className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-gray-700 cursor-pointer"
+                className="flex items-center justify-center w-full h-full p-4 mb-2 font-semibold text-center text-gray-700 cursor-pointer"
               >
                 {files.length ? (
                   <div>
-                    {files.length} file(s) selected
+                    {files.length} file&#40;s&#41; selected
                     <br />
                     <span className="text-blue-500 hover:text-blue-700">
-                      Change PDF(s)
+                      Change PDF&#40;s&#41;
                     </span>
                   </div>
                 ) : (
