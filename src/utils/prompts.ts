@@ -99,7 +99,10 @@ function convertTextToValidArray(jsonString: string): any[] {
     // Remove the trailing comma before the closing bracket
     const fixedString = trimmedString.replace(/,\s*\]$/, ']');
 
-    const afterParse = JSON.parse(fixedString);
+    // Remove NULL character (U+0000)
+    const stringWithoutNullChar = fixedString.replace(/\u0000/g, '');
+
+    const afterParse = JSON.parse(stringWithoutNullChar);
 
     if (missingBrackets > 0) {
       afterParse.pop();
@@ -107,7 +110,7 @@ function convertTextToValidArray(jsonString: string): any[] {
 
     return afterParse;
   } catch (error) {
-    console.error('Error parsing JSON string:', jsonString);
+    console.error('Error parsing JSON string:', error);
 
     throw new Error('Error parsing JSON string');
   }

@@ -137,6 +137,12 @@ export const invoice_schema: StatefulSchemaPropertyWithTitle[] = [
     example: '12345',
   },
   {
+    title: 'vendor_name',
+    description: 'The name of the vendor',
+    type: 'string',
+    example: 'ABC Company',
+  },
+  {
     title: 'invoice_date',
     description: 'The date the invoice was issued',
     type: 'string',
