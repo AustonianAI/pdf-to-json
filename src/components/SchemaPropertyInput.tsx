@@ -18,14 +18,6 @@ const SchemaPropertyInput: React.FC<{
     property.items ? Object.values(property.items) : [],
   );
 
-  // const handlePropertyChange = (
-  //   event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  // ) => {
-  //   const { name, value } = event.target;
-
-  //   onChange(index, { ...property, [name]: value });
-  // };
-
   const handlePropertyChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -110,24 +102,26 @@ const SchemaPropertyInput: React.FC<{
           </select>
         </div>
 
-        <div>
-          <label
-            htmlFor={`example-${index}`}
-            className={styles.formControlLabel}
-          >
-            Example
-          </label>
+        {property.type !== 'array' && (
+          <div>
+            <label
+              htmlFor={`example-${index}`}
+              className={styles.formControlLabel}
+            >
+              Example
+            </label>
 
-          <input
-            type="text"
-            name="example"
-            id={`example-${index}`}
-            value={property.example?.toString() || ''}
-            onChange={handlePropertyChange}
-            className={styles.formControl}
-            placeholder="e.g. 81464-B"
-          />
-        </div>
+            <input
+              type="text"
+              name="example"
+              id={`example-${index}`}
+              value={property.example?.toString() || ''}
+              onChange={handlePropertyChange}
+              className={styles.formControl}
+              placeholder="e.g. 81464-B"
+            />
+          </div>
+        )}
       </div>
 
       <div>
@@ -162,7 +156,7 @@ const SchemaPropertyInput: React.FC<{
                 <SchemaPropertyInput
                   index={index}
                   property={item}
-                  onChange={() => handleSubPropertyChange(index, property)}
+                  onChange={() => handleSubPropertyChange(index, item)}
                   isSubProperty
                 />
               </li>
