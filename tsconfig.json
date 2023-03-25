@@ -17,6 +17,7 @@
     "incremental": true,
     "baseUrl": "./src/",
     "paths": {
+      "@Assets/*": ["assets/*"],
       "@Components/*": ["components/*"],
       "@Context/*": ["context/*"],
       "@Styles/*": ["styles/*"],

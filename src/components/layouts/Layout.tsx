@@ -6,9 +6,9 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="py-10">
+    <div className="py-8">
       <main>
-        <div className="mx-auto px-3 lg:px-9">{children}</div>
+        <div className="px-3 mx-auto lg:px-9">{children}</div>
       </main>
     </div>
   );

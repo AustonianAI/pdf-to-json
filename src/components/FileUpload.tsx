@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import DropZone from './Dropzone';
 import clsx from 'clsx';
 import RawJsonDisplay from './RawJsonDisplay';
+import Image from 'next/image';
 import Spinner from './Spinner';
 import styles from './SchemaPropertyInput.module.css';
 import {
@@ -20,6 +21,7 @@ import SchemaPropertyInput, {
   StatefulSchemaPropertyWithTitle,
 } from './SchemaPropertyInput';
 import SchemaContext from '@Context/schema-context';
+import JSONIFYIllustration from '@Assets/jsonify-illustration.png';
 
 export default function FileUploadForm() {
   const [files, setFiles] = useState<File[]>([]);
@@ -368,9 +370,23 @@ export default function FileUploadForm() {
                 {rawJson.length ? (
                   <RawJsonDisplay data={rawJson} />
                 ) : (
-                  <p className="text-gray-500">
-                    The extracted data will be displayed here.
-                  </p>
+                  <div
+                    className="flex items-center justify-center text-center border border-gray-300 h-96"
+                    style={{ backgroundColor: 'rgb(250, 250, 250)' }}
+                  >
+                    <div>
+                      <Image
+                        width={375}
+                        height={150}
+                        alt="JSONIFY Illustration"
+                        src={JSONIFYIllustration}
+                        className="mx-auto"
+                      />
+                      <p className="text-gray-500">
+                        The extracted data will be displayed here.
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
