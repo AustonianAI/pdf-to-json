@@ -5,6 +5,7 @@ import DropZone from './Dropzone';
 import clsx from 'clsx';
 import RawJsonDisplay from './RawJsonDisplay';
 import Spinner from './Spinner';
+import styles from './SchemaPropertyInput.module.css';
 
 import { AiOutlinePlus, AiOutlineClose } from 'react-icons/ai'; // Import the necessary icons
 
@@ -17,6 +18,8 @@ import SchemaContext from '@Context/schema-context';
 export default function FileUploadForm() {
   const [files, setFiles] = useState<File[]>([]);
   const [isDropActive, setIsDropActive] = useState(false);
+
+  const [schemaExampleSelect, setExampleSelect] = useState('custom');
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -120,6 +123,30 @@ export default function FileUploadForm() {
     [schemaProperties],
   );
 
+  const handleSchemaExampleChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setExampleSelect(event.target.value);
+
+    switch (event.target.value) {
+      case 'invoiceExample':
+        setSchemaProperties([]);
+        break;
+      case 'menuExample':
+        setSchemaProperties([]);
+        break;
+      case 'menuExampleWithItems':
+        setSchemaProperties([]);
+        break;
+      case 'realEstateExample':
+        setSchemaProperties([]);
+        break;
+      default:
+        setSchemaProperties([]);
+        break;
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!files.length) return;
@@ -205,6 +232,30 @@ export default function FileUploadForm() {
         <div className="w-full p-1 lg:w-3/5">
           <div className="p-6 bg-white rounded-lg shadow-md">
             <h2 className="mb-4 text-lg font-semibold">Define Your Data</h2>
+            <div>
+              <label
+                htmlFor="schemaOptions"
+                className={styles.formControlLabel}
+              >
+                Select a predefined schema from the dropdown or build your own.
+              </label>
+
+              <select
+                value={schemaExampleSelect}
+                onChange={handleSchemaExampleChange}
+                name="schemaOptions"
+                id="schemaOptions"
+                className={clsx(styles.formControl, 'mb-5 !w-1/2')}
+              >
+                <option value="custom">Custom</option>
+                <option value="invoiceExample">Invoice Example</option>
+                <option value="menuExample">Menu Example</option>
+                <option value="menuExampleWithItems">
+                  Menu Example &#40;with items&#41;
+                </option>
+                <option value="realEstateExample">Real Estate Example</option>
+              </select>
+            </div>
             <div className="text-left">
               {schemaProperties.map((property, index) => (
                 <div className="relative" key={index}>
