@@ -27,7 +27,7 @@ export default function Home() {
       </Head>
       <main>
         <div className="mx-auto sm:text-center">
-          <div className="my-4 text-center">
+          <div className="mb-4 text-center">
             <Image
               width={270}
               height={105}
