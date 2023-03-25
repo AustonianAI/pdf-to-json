@@ -6,6 +6,12 @@ import clsx from 'clsx';
 import RawJsonDisplay from './RawJsonDisplay';
 import Spinner from './Spinner';
 import styles from './SchemaPropertyInput.module.css';
+import {
+  restaurant_schema_with_menu,
+  restaurant_schema_without_menu,
+  real_estate_brochure_schema,
+  invoice_schema,
+} from '../data/sampleSchemas';
 
 import { AiOutlinePlus, AiOutlineClose } from 'react-icons/ai'; // Import the necessary icons
 
@@ -130,19 +136,26 @@ export default function FileUploadForm() {
 
     switch (event.target.value) {
       case 'invoiceExample':
-        setSchemaProperties([]);
+        setSchemaProperties(invoice_schema);
         break;
       case 'menuExample':
-        setSchemaProperties([]);
+        setSchemaProperties(restaurant_schema_without_menu);
         break;
       case 'menuExampleWithItems':
-        setSchemaProperties([]);
+        setSchemaProperties(restaurant_schema_with_menu);
         break;
       case 'realEstateExample':
-        setSchemaProperties([]);
+        setSchemaProperties(real_estate_brochure_schema);
         break;
       default:
-        setSchemaProperties([]);
+        setSchemaProperties([
+          {
+            title: '',
+            description: '',
+            type: 'string',
+            example: '',
+          },
+        ]);
         break;
     }
   };
@@ -183,8 +196,6 @@ export default function FileUploadForm() {
         };
       }
     }, {});
-
-    console.log(schema);
 
     setRawJson([]);
     setIsLoading(true);

@@ -34,6 +34,8 @@ export const aiPdfHandler = async (
     });
     return zipObjects(resultObjectArr);
   } catch (error: any) {
+    console.error(error);
+
     throw new Error(error);
   }
 };
