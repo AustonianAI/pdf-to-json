@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import DropZone from './Dropzone';
 import clsx from 'clsx';
 import RawJsonDisplay from './RawJsonDisplay';
+import Image from 'next/image';
 import Spinner from './Spinner';
 import styles from './SchemaPropertyInput.module.css';
 import {
@@ -20,6 +21,7 @@ import SchemaPropertyInput, {
   StatefulSchemaPropertyWithTitle,
 } from './SchemaPropertyInput';
 import SchemaContext from '@Context/schema-context';
+import JSONIFYIllustration from '@Assets/jsonify-illustration.png';
 
 export default function FileUploadForm() {
   const [files, setFiles] = useState<File[]>([]);
@@ -351,6 +353,15 @@ export default function FileUploadForm() {
             </DropZone>
           </div>
           <div className="p-6 mt-2 bg-white rounded-lg shadow-md">
+            <div className="text-center">
+              <Image
+                width={375}
+                height={150}
+                alt="JSONIFY Illustration"
+                src={JSONIFYIllustration}
+                className="mx-auto"
+              />
+            </div>
             <h2 className="mb-4 text-lg font-semibold">Generate Data</h2>
             <div className="mt-auto">
               <button
