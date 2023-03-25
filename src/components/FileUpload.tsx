@@ -132,14 +132,17 @@ export default function FileUploadForm() {
           [property.title]: {
             description: property.description,
             type: property.type,
-            items: property.items.reduce((xcc, item) => ({
-              ...xcc,
-              [item.title]: {
-                description: item.description,
-                type: item.type,
-                example: item.example,
-              },
-            })),
+            items: property.items.reduce(
+              (xcc, item) => ({
+                ...xcc,
+                [item.title]: {
+                  description: item.description,
+                  type: item.type,
+                  example: item.example,
+                },
+              }),
+              {},
+            ),
           },
         };
       } else {
