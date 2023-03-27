@@ -1,10 +1,10 @@
-# GPT-3 & Next.js - Parse Your PDFs into JSON with Your Own Custom Schema
+# GPT-3 & Next.js - JSONify a PDF - Convert PDFs into JSON data with your own custom schema.
 
 Working with PDFs can be a huge drag. With AI, we can take PDFs and extract custom JSON data which make them much easier to work with.
 
 Checkout a [live deployment of this app at jsonify.info](https://www.jsonify.info/).
 
-Tech stack includes Next.js, Tailwind, OpenAI, and Typescript. Note that this app does not use LangChain, Pinecone, or even GPT-4 (it is using the GPT-3.5 model). While you would likely want to consider these on a more robust app, the purpose of this app is to demonstrate the simply "JSONification of a PDF" process.
+Tech stack includes Next.js, Tailwind, OpenAI, and Typescript. Note that this app does not use LangChain, Pinecone, or even GPT-4 (it is using the GPT-3.5 model). While you would likely want to consider these on a more robust app, the purpose of this app is to simply demonstrate the "JSONification of a PDF" process.
 
 [Get in touch via twitter if you have questions](https://twitter.com/AustonianTX)
 
