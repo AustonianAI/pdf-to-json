@@ -1,38 +1,45 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# GPT-3 & Next.js - Parse Your PDFs into JSON with Your Own Custom Schema
 
-## Getting Started
+Working with PDFs can be a huge drag. With AI, we can take PDFs and extract custom JSON data which make them much easier to work with.
 
-First, run the development server:
+Checkout a [live deployment of this app at jsonify.info](https://www.jsonify.info/).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+Tech stack includes Next.js, Tailwind, OpenAI, and Typescript. Note that this app does not use LangChain, Pinecone, or even GPT-4 (it is using the GPT-3.5 model). While you would likely want to consider these on a more robust app, the purpose of this app is to demonstrate the simply "JSONification of a PDF" process.
+
+[Get in touch via twitter if you have questions](https://twitter.com/AustonianTX)
+
+## Development
+
+1. Clone the repo
+
+```
+git clone https://github.com/AustonianTX/pdf-to-json.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install packages
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```
+npm install
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+3. Set up your `.env` file
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- Create a `.env` file, and add your OpenAI API key
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+OPENAI_API_KEY=
+```
 
-## Learn More
+- Visit [openai](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key) to retrieve API keys and insert into your `.env` file.
 
-To learn more about Next.js, take a look at the following resources:
+## Run the app
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+One you have installed the dependenies, you can run the app using `npm run dev` to launch the local dev environment. From there you can define a schema, upload your PDF file(s), and parse them into JSON.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Troubleshooting
 
-## Deploy on Vercel
+In general, keep an eye out in the `issues` and `discussions` section of this repo for solutions.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Credit
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The frontend of this repo was built with [Austin Taylor](https://github.com/austin-triiistudio) at the Austin AI X Foundation Capital hackathon.
