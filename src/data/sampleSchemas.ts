@@ -90,6 +90,12 @@ export const restaurant_schema_without_menu: StatefulSchemaPropertyWithTitle[] =
 
 export const real_estate_brochure_schema: StatefulSchemaPropertyWithTitle[] = [
   {
+    title: 'property_name',
+    description: 'A filling name of the property using the street address',
+    type: 'string',
+    example: '123 Main Street Retail Space',
+  },
+  {
     title: 'property_address',
     description: 'The address of the property',
     type: 'string',
@@ -104,10 +110,50 @@ export const real_estate_brochure_schema: StatefulSchemaPropertyWithTitle[] = [
       'Check out this great retail location with high traffic counts and great visibility!',
   },
   {
-    title: 'residential_population_one_mile',
-    description: 'The residential population within a mile of the property',
-    type: 'string',
-    example: '10,000',
+    title: 'property_subunit_spaces',
+    description:
+      'The individual spaces within the property that are available, such are suites or floors.',
+    type: 'array',
+    items: [
+      {
+        title: 'property_subunit_space_name',
+        description: 'The name of the subunit space',
+        type: 'string',
+        example: 'Suite 1',
+      },
+      {
+        title: 'property_subunit_space_description',
+        description: 'A description of the subunit space',
+        type: 'string',
+        example:
+          'The first floor office space on the west side of the building',
+      },
+      {
+        title: 'property_subunit_space_size',
+        description: 'The size of the subunit space',
+        type: 'string',
+        example: '1,000 sq ft',
+      },
+      {
+        title: 'property_subunit_space_rent',
+        description: 'The rental of lease cost of the subunit space',
+        type: 'string',
+        example: '$28 / square foot per year',
+      },
+      {
+        title: 'property_subunit_status',
+        description:
+          'The status of the subunit space such as available or leased',
+        type: 'string',
+        example: 'Available',
+      },
+      {
+        title: 'property_subunit_space_occupancy',
+        description: 'The number of people that can occupy the subunit space',
+        type: 'string',
+        example: '30',
+      },
+    ],
   },
   {
     title: 'broker_contact_name',
